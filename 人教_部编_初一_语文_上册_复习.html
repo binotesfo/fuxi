@@ -71,9 +71,211 @@
             .question-text { font-size: 1rem; }
             .option { padding: 10px 12px; font-size: 0.9rem; }
         }
+        
+        /* 特效容器 - 覆盖屏幕上半部分 */
+        .effect-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 55vh;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+        
+        /* 中央大文字效果 */
+        .effect-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            opacity: 0;
+            z-index: 100;
+            text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px rgba(255,215,0,0.6);
+        }
+        
+        .effect-text.level-1 { color: #4CAF50; }
+        .effect-text.level-2 { color: #FFD700; }
+        .effect-text.level-3 { color: #FF6B6B; }
+        .effect-text.level-4 { color: #FF1493; }
+        .effect-text.level-5 { color: #00FFFF; text-shadow: 0 0 30px #00FFFF, 0 0 60px #FFD700, 0 0 90px #FF1493; }
+        
+        .effect-text.show {
+            animation: textBurst 1.5s ease-out forwards;
+        }
+        
+        @keyframes textBurst {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            40% { transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) translateY(-30px); }
+        }
+        
+        /* 粒子效果 */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+        
+        .particle.star {
+            width: 10px;
+            height: 10px;
+            background: radial-gradient(circle, #FFD700, #FFA500);
+            box-shadow: 0 0 6px #FFD700;
+        }
+        
+        .particle.heart {
+            width: 15px;
+            height: 15px;
+            background: none;
+        }
+        
+        .particle.heart::before,
+        .particle.heart::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 24px;
+            background: #FF6B6B;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .particle.heart::before {
+            left: 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+        
+        .particle.heart::after {
+            left: 15px;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+        
+        .particle.confetti {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+        }
+        
+        .particle.diamond {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #00FFFF, #FFFFFF, #00FFFF);
+            transform: rotate(45deg);
+            box-shadow: 0 0 10px #00FFFF;
+        }
+        
+        /* 烟花效果 */
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            animation: fireworkBurst 1s ease-out forwards;
+        }
+        
+        @keyframes fireworkBurst {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+        }
+        
+        /* 光环效果 */
+        .ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            border: 3px solid;
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+        }
+        
+        .ring.show {
+            animation: ringExpand 0.8s ease-out forwards;
+        }
+        
+        @keyframes ringExpand {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(8); opacity: 0; }
+        }
+        
+        /* 闪光效果 */
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        
+        .flash.show {
+            animation: flashBurst 0.3s ease-out;
+        }
+        
+        @keyframes flashBurst {
+            0% { opacity: 0.6; }
+            100% { opacity: 0; }
+        }
+        
+        /* 下落的金币/星星 */
+        .falling-item {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: fallDown 2s ease-in forwards;
+        }
+        
+        @keyframes fallDown {
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(60vh) rotate(360deg); opacity: 0; }
+        }
+        
+        /* 震动效果 */
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        /* 连击数字飘动 */
+        .combo-number {
+            position: absolute;
+            font-size: 4rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 20px #FF6B00, 2px 2px 0 #FF4500;
+            animation: comboFloat 1.5s ease-out forwards;
+        }
+        
+        @keyframes comboFloat {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            30% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+            50% { transform: translate(-50%, -60%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -100%) scale(0.8); }
+        }
     </style>
 </head>
 <body>
+    <!-- 特效容器 -->
+    <div class="effect-container" id="effectContainer"></div>
+    <div class="flash" id="flashOverlay"></div>
+    
     <div class="streak-indicator" id="streakIndicator">🔥 连对 <span id="streakCount">0</span> 次</div>
     <div class="container">
         <div class="header">
@@ -147,7 +349,7 @@
             {id:27, unit:"第一单元", lesson:"《观沧海》", type:"默写", question:"补全诗句：'日月之行，若出其中；______，若出其里。'", options:["星汉灿烂", "星光灿烂", "星河灿烂", "星辰灿烂"], answer:0, explanation:"原文是'日月之行，若出其中；星汉灿烂，若出其里。'"},
             {id:28, unit:"第一单元", lesson:"《观沧海》", type:"诗歌理解", question:"《观沧海》表达了作者怎样的情怀？", options:["统一中原的雄心壮志", "思乡之情", "离别之苦", "田园之乐"], answer:0, explanation:"《观沧海》表达了曹操统一中原的雄心壮志。"},
             {id:29, unit:"第一单元", lesson:"《闻王昌龄左迁龙标遥有此寄》", type:"文学常识", question:"《闻王昌龄左迁龙标遥有此寄》的作者是？", options:["李白", "杜甫", "白居易", "王维"], answer:0, explanation:"这首诗是李白所作，表达对友人的思念之情。"},
-            {id:30, unit:"第一单元", lesson:"《闻王昌龄左迁龙标遥有此寄》", type:"默写", question:"补全诗句：'我寄愁心与明月，______。'", options:["随君直到夜郎西", "随风直到夜郎西", "送君直到夜郎西", "伴君直到夜郎西"], answer:1, explanation:"原文是'我寄愁心与明月，随君直到夜郎西。'"},
+            {id:30, unit:"第一单元", lesson:"《闻王昌龄左迁龙标遥有此寄》", type:"默写", question:"补全诗句：'我寄愁心与明月，______。'", options:["随君直到夜郎西", "随风直到夜郎西", "送君直到夜郎西", "伴君直到夜郎西"], answer:0, explanation:"原文是'我寄愁心与明月，随君直到夜郎西。'"},
             {id:31, unit:"第一单元", lesson:"《次北固山下》", type:"文学常识", question:"《次北固山下》的作者是？", options:["王湾", "王维", "王之涣", "王昌龄"], answer:0, explanation:"《次北固山下》是唐代诗人王湾的作品。"},
             {id:32, unit:"第一单元", lesson:"《次北固山下》", type:"默写", question:"补全诗句：'海日生残夜，______。'", options:["江春入旧年", "江春入新年", "春风入旧年", "春江水暖时"], answer:0, explanation:"原文是'海日生残夜，江春入旧年。'"},
             {id:33, unit:"第一单元", lesson:"《天净沙·秋思》", type:"文学常识", question:"《天净沙·秋思》的体裁是？", options:["散曲小令", "唐诗", "宋词", "元杂剧"], answer:0, explanation:"《天净沙·秋思》是元曲中的散曲小令。"},
@@ -614,7 +816,14 @@
                     kp.frequency = Math.max(1, kp.frequency - 2);
                     if (kp.consecutiveCorrect >= 3) {
                         gameState.masteredIds.push(q.id);
+                        // 触发已掌握特效
+                        Effects.trigger(true, gameState.streak, true);
+                    } else {
+                        // 触发普通答对特效
+                        Effects.trigger(true, gameState.streak, false);
                     }
+                } else {
+                    Effects.trigger(true, gameState.streak, false);
                 }
                 
                 showStreak();
@@ -649,6 +858,313 @@
                 setTimeout(() => indicator.classList.remove('show'), 2000);
             }
         }
+        
+        // ========== 特效系统 ==========
+        const Effects = {
+            container: null,
+            flash: null,
+            
+            init() {
+                this.container = document.getElementById('effectContainer');
+                this.flash = document.getElementById('flashOverlay');
+            },
+            
+            // 显示中央文字
+            showText(text, level) {
+                const el = document.createElement('div');
+                el.className = `effect-text level-${level}`;
+                el.textContent = text;
+                this.container.appendChild(el);
+                
+                // 触发动画
+                requestAnimationFrame(() => el.classList.add('show'));
+                
+                setTimeout(() => el.remove(), 1500);
+            },
+            
+            // 创建粒子
+            createParticle(type, x, y, color) {
+                const particle = document.createElement('div');
+                particle.className = `particle ${type}`;
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                if (color && type === 'confetti') {
+                    particle.style.background = color;
+                }
+                
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 100 + Math.random() * 150;
+                const vx = Math.cos(angle) * velocity;
+                const vy = Math.sin(angle) * velocity - 100;
+                
+                let posX = x, posY = y, opacity = 1, rotation = 0;
+                const gravity = 300;
+                let startTime = performance.now();
+                
+                const animate = (currentTime) => {
+                    const elapsed = (currentTime - startTime) / 1000;
+                    posX += vx * 0.016;
+                    posY += vy * 0.016 + gravity * elapsed * 0.016;
+                    opacity -= 0.02;
+                    rotation += 5;
+                    
+                    particle.style.left = posX + 'px';
+                    particle.style.top = posY + 'px';
+                    particle.style.opacity = opacity;
+                    particle.style.transform = `rotate(${rotation}deg)`;
+                    
+                    if (opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        particle.remove();
+                    }
+                };
+                
+                this.container.appendChild(particle);
+                requestAnimationFrame(animate);
+            },
+            
+            // 烟花效果
+            createFirework(x, y, color) {
+                const particleCount = 20;
+                for (let i = 0; i < particleCount; i++) {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = x + 'px';
+                    firework.style.top = y + 'px';
+                    firework.style.background = color;
+                    firework.style.boxShadow = `0 0 6px ${color}`;
+                    
+                    const angle = (i / particleCount) * Math.PI * 2;
+                    const distance = 50 + Math.random() * 80;
+                    firework.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                    firework.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                    
+                    this.container.appendChild(firework);
+                    setTimeout(() => firework.remove(), 1000);
+                }
+            },
+            
+            // 光环效果
+            createRing(color) {
+                const ring = document.createElement('div');
+                ring.className = 'ring';
+                ring.style.borderColor = color;
+                this.container.appendChild(ring);
+                
+                requestAnimationFrame(() => ring.classList.add('show'));
+                setTimeout(() => ring.remove(), 800);
+            },
+            
+            // 闪光效果
+            flashScreen() {
+                this.flash.classList.add('show');
+                setTimeout(() => this.flash.classList.remove('show'), 300);
+            },
+            
+            // 下落物品
+            createFallingItems(emoji, count) {
+                const colors = ['#FFD700', '#FF6B6B', '#4CAF50', '#00BCD4', '#FF4081'];
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        const item = document.createElement('div');
+                        item.className = 'falling-item';
+                        item.textContent = emoji;
+                        item.style.left = Math.random() * 100 + '%';
+                        item.style.animationDuration = (1.5 + Math.random()) + 's';
+                        item.style.animationDelay = Math.random() * 0.3 + 's';
+                        this.container.appendChild(item);
+                        setTimeout(() => item.remove(), 2500);
+                    }, i * 100);
+                }
+            },
+            
+            // 震动屏幕
+            shakeScreen() {
+                document.body.classList.add('shake');
+                setTimeout(() => document.body.classList.remove('shake'), 500);
+            },
+            
+            // 连击数字
+            showComboNumber(number) {
+                const combo = document.createElement('div');
+                combo.className = 'combo-number';
+                combo.textContent = number;
+                combo.style.left = '50%';
+                combo.style.top = '40%';
+                this.container.appendChild(combo);
+                setTimeout(() => combo.remove(), 1500);
+            },
+            
+            // 等级1：答对一次 - 简单效果
+            level1_Correct() {
+                this.showText('✓ 正确', 1);
+                this.createRing('#4CAF50');
+                // 少量星星
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => {
+                        this.createParticle('star', 
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.5,
+                            '#FFD700');
+                    }, i * 50);
+                }
+            },
+            
+            // 等级2：连对3次 - 中等效果
+            level2_Streak3() {
+                this.showText('🔥 连对3次', 2);
+                this.flashScreen();
+                this.createRing('#FFD700');
+                this.createRing('#FFA500');
+                
+                // 金色星星爆发
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        this.createParticle('star',
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.4,
+                            '#FFD700');
+                    }, i * 30);
+                }
+                
+                // 烟花
+                setTimeout(() => {
+                    this.createFirework(window.innerWidth * 0.3, window.innerHeight * 0.3, '#FFD700');
+                    this.createFirework(window.innerWidth * 0.7, window.innerHeight * 0.3, '#FFA500');
+                }, 200);
+            },
+            
+            // 等级3：连对5次 - 强烈效果
+            level3_Streak5() {
+                this.showText('🔥 连对5次！', 3);
+                this.flashScreen();
+                this.shakeScreen();
+                
+                // 多个光环
+                this.createRing('#FF6B6B');
+                setTimeout(() => this.createRing('#FFD700'), 100);
+                setTimeout(() => this.createRing('#FF6B6B'), 200);
+                
+                // 大量爱心
+                for (let i = 0; i < 25; i++) {
+                    setTimeout(() => {
+                        this.createParticle('heart',
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.4,
+                            '#FF6B6B');
+                    }, i * 40);
+                }
+                
+                // 多个烟花
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        this.createFirework(
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.3,
+                            ['#FF6B6B', '#FFD700', '#FF4081'][i]);
+                    }, i * 200);
+                }
+                
+                this.showComboNumber(5);
+            },
+            
+            // 等级4：连对10次 - 超强效果
+            level4_Streak10() {
+                this.showText('🔥 连对10次！！', 4);
+                this.flashScreen();
+                this.shakeScreen();
+                
+                // 密集光环
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => this.createRing(['#FF1493', '#FFD700', '#00BCD4', '#FF6B6B', '#4CAF50'][i]), i * 100);
+                }
+                
+                // 密集粒子
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const types = ['star', 'heart', 'confetti'];
+                        const colors = ['#FF1493', '#FFD700', '#FF6B6B', '#00BCD4'];
+                        this.createParticle(types[i % 3],
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.4,
+                            colors[i % 4]);
+                    }, i * 20);
+                }
+                
+                // 多个烟花
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        this.createFirework(
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.35,
+                            ['#FF1493', '#FFD700', '#00BCD4', '#FF6B6B', '#4CAF50'][i]);
+                    }, i * 150);
+                }
+                
+                this.showComboNumber(10);
+                this.createFallingItems('⭐', 10);
+            },
+            
+            // 等级5：已掌握 - 终极效果
+            level5_Mastered() {
+                this.showText('🎉 已掌握！', 5);
+                this.flashScreen();
+                this.shakeScreen();
+                
+                // 超密集光环
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => this.createRing(['#00FFFF', '#FFD700', '#FF1493', '#00FF00', '#FF6B6B', '#00BCD4', '#9C27B0', '#FF5722'][i]), i * 80);
+                }
+                
+                // 超多粒子
+                for (let i = 0; i < 80; i++) {
+                    setTimeout(() => {
+                        const types = ['star', 'heart', 'confetti', 'diamond'];
+                        const colors = ['#FFD700', '#FF1493', '#00FFFF', '#00FF00', '#FF6B6B'];
+                        this.createParticle(types[i % 4],
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.4,
+                            colors[i % 5]);
+                    }, i * 15);
+                }
+                
+                // 超多烟花
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => {
+                        this.createFirework(
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.35,
+                            ['#00FFFF', '#FFD700', '#FF1493', '#00FF00', '#FF6B6B', '#00BCD4', '#9C27B0', '#FF5722'][i]);
+                    }, i * 100);
+                }
+                
+                // 下落物品
+                this.createFallingItems('🌟', 15);
+                setTimeout(() => this.createFallingItems('💎', 10), 500);
+                setTimeout(() => this.createFallingItems('🏆', 5), 1000);
+            },
+            
+            // 根据情况触发相应等级特效
+            trigger(isCorrect, streak, isMastered) {
+                if (!isCorrect) return;
+                
+                if (isMastered) {
+                    this.level5_Mastered();
+                } else if (streak >= 10) {
+                    this.level4_Streak10();
+                } else if (streak >= 5) {
+                    this.level3_Streak5();
+                } else if (streak >= 3) {
+                    this.level2_Streak3();
+                } else {
+                    this.level1_Correct();
+                }
+            }
+        };
+        
+        // 初始化特效系统
+        Effects.init();
 
         function updateStats() {
             const mastered = gameState.masteredIds.length;
