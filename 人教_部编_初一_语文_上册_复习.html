@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>人教版初一语文核心知识点闯关-随机答案</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        .header { text-align: center; color: white; padding: 15px 10px; }
+        .header h1 { font-size: 1.4rem; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .progress-bar { background: rgba(255,255,255,0.3); border-radius: 20px; height: 20px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { background: linear-gradient(90deg, #00d2ff, #3a7bd5); height: 100%; border-radius: 20px; transition: width 0.5s ease; }
+        .stats { display: flex; justify-content: space-around; color: white; font-size: 0.85rem; padding: 10px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-bottom: 15px; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.2rem; font-weight: bold; }
+        .card-container { perspective: 1000px; margin-bottom: 15px; }
+        .card {
+            background: white; border-radius: 15px; padding: 20px 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 280px; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
+        .unit-tag { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .question-type { background: #f5f5f5; color: #666; padding: 4px 10px; border-radius: 15px; font-size: 0.7rem; }
+        .question-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 15px 0; }
+        .question-text { font-size: 1.1rem; color: #333; line-height: 1.6; margin-bottom: 15px; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 10px;
+            cursor: pointer; transition: all 0.3s ease; font-size: 0.95rem; text-align: left;
+        }
+        .option:hover { border-color: #667eea; background: #f8f9ff; }
+        .option.selected { border-color: #667eea; background: #667eea; color: white; }
+        .option.correct { border-color: #4CAF50; background: #4CAF50; color: white; }
+        .option.wrong { border-color: #f44336; background: #f44336; color: white; }
+        .btn-container { display: flex; gap: 10px; margin-top: 15px; }
+        .btn {
+            flex: 1; padding: 14px 20px; border: none; border-radius: 10px;
+            font-size: 1rem; font-weight: bold; cursor: pointer; transition: all 0.3s ease;
+        }
+        .btn-submit { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-next { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; display: none; }
+        .feedback { text-align: center; padding: 15px; border-radius: 10px; margin-top: 10px; font-weight: bold; display: none; }
+        .feedback.correct { background: #e8f5e9; color: #2e7d32; display: block; }
+        .feedback.wrong { background: #ffebee; color: #c62828; display: block; }
+        .empty-state { text-align: center; color: white; padding: 40px 20px; }
+        .empty-state h2 { font-size: 1.5rem; margin-bottom: 10px; }
+        .streak-indicator {
+            position: fixed; top: 10px; right: 10px; background: rgba(255,255,255,0.95);
+            padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;
+            color: #667eea; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: none;
+        }
+        .streak-indicator.show { display: block; animation: pulse 0.5s ease; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .reset-btn {
+            background: rgba(255,255,255,0.3); color: white; border: 1px solid rgba(255,255,255,0.5);
+            padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; margin-top: 10px;
+        }
+        @media (max-width: 380px) {
+            .header h1 { font-size: 1.2rem; }
+            .card { padding: 15px 12px; min-height: 260px; }
+            .question-text { font-size: 1rem; }
+            .option { padding: 10px 12px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="streak-indicator" id="streakIndicator">🔥 连对 <span id="streakCount">0</span> 次</div>
+    <div class="container">
+        <div class="header">
+            <h1>📚 人教版初一语文核心知识点</h1>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
+            <div class="stats">
+                <div class="stat-item"><div class="stat-value" id="masteredCount">0</div><div>已掌握</div></div>
+                <div class="stat-item"><div class="stat-value" id="learningCount">300</div><div>学习中</div></div>
+                <div class="stat-item"><div class="stat-value" id="accuracyRate">0%</div><div>正确率</div></div>
+            </div>
+        </div>
+        <div id="gameArea">
+            <div class="card-container">
+                <div class="card" id="questionCard">
+                    <div class="card-header">
+                        <span class="unit-tag" id="unitTag">第一单元</span>
+                        <span class="question-type" id="questionType">文学常识</span>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-text" id="questionText">加载中...</div>
+                        <div class="options" id="optionsContainer"></div>
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                    <div class="btn-container">
+                        <button class="btn btn-submit" id="submitBtn" disabled>提交答案</button>
+                        <button class="btn btn-next" id="nextBtn">下一题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h2>🎉 恭喜完成！</h2>
+            <p>你已经掌握了所有核心知识点！</p>
+            <button class="reset-btn" onclick="resetProgress()">重新开始</button>
+        </div>
+    </div>
+    <script>
+        // 基于2024/2025最新版人教版七年级上册语文教材的300个核心知识点
+        const knowledgePoints = [
+            // === 第一单元：四季美景 ===
+            {id:1, unit:"第一单元", lesson:"《春》", type:"文学常识", question:"《春》的作者朱自清是哪个时期的著名散文家？", options:["现代", "当代", "近代", "古代"], answer:0, explanation:"朱自清（1898-1948）是中国现代著名散文家、诗人、学者。"},
+            {id:2, unit:"第一单元", lesson:"《春》", type:"字音", question:"下列加点字读音正确的是？", options:["酝酿（yùn niàng）", "酝酿（wēn ràng）", "酝酿（yùn ràng）", "酝酿（wēn niàng）"], answer:0, explanation:"'酝酿'正确读音是 yùn niàng。"},
+            {id:3, unit:"第一单元", lesson:"《春》", type:"字形", question:"下列词语书写完全正确的是？", options:["呼朋引伴", "呼朋引半", "呼朋引拌", "呼朋引绊"], answer:0, explanation:"'呼朋引伴'是正确写法。"},
+            {id:4, unit:"第一单元", lesson:"《春》", type:"词语解释", question:"'花枝招展'在文中的意思是？", options:["形容女子打扮得十分艳丽", "形容花开得很茂盛", "形容树枝摇摆", "形容春风拂面"], answer:0, explanation:"'花枝招展'原形容女子打扮得十分艳丽，文中比喻姿态优美。"},
+            {id:5, unit:"第一单元", lesson:"《春》", type:"修辞手法", question:"'春天像刚落地的娃娃，从头到脚都是新的'使用了什么修辞手法？", options:["比喻", "拟人", "排比", "夸张"], answer:0, explanation:"这是比喻句，把春天比作刚落地的娃娃。"},
+            {id:6, unit:"第一单元", lesson:"《春》", type:"课文理解", question:"《春》一文描绘了哪五幅春景图？", options:["春草图、春花图、春风图、春雨图、迎春图", "春山图、春水图、春花图、春风图、春雨图", "春草图、春树图、春风图、春雨图、春耕图", "春草图、春花图、春雷图、春雨图、迎春图"], answer:0, explanation:"《春》描绘了春草图、春花图、春风图、春雨图、迎春图五幅画面。"},
+            {id:7, unit:"第一单元", lesson:"《春》", type:"默写", question:"补全句子：'盼望着，盼望着，______，春天的脚步近了。'", options:["东风来了", "春风来了", "春天来了", "燕子来了"], answer:0, explanation:"原文是'盼望着，盼望着，东风来了，春天的脚步近了。'"},
+            {id:8, unit:"第一单元", lesson:"《春》", type:"字音", question:"'黄晕'中'晕'的读音是？", options:["yùn", "yūn", "hūn", "yǔn"], answer:0, explanation:"'晕'在这里读 yùn，指光影、色彩四周模糊的部分。"},
+            {id:9, unit:"第一单元", lesson:"《春》", type:"文学常识", question:"朱自清的代表作散文集是？", options:["《背影》", "《呐喊》", "《彷徨》", "《朝花夕拾》"], answer:0, explanation:"朱自清的散文代表作有《背影》《荷塘月色》《绿》等。"},
+            {id:10, unit:"第一单元", lesson:"《春》", type:"词语解释", question:"'朗润'的意思是？", options:["明朗润泽", "朗读润泽", "晴朗湿润", "开朗圆润"], answer:0, explanation:"'朗润'指明朗润泽，形容山色明朗润泽。"},
+            
+            {id:11, unit:"第一单元", lesson:"《济南的冬天》", type:"文学常识", question:"《济南的冬天》的作者老舍的原名是？", options:["舒庆春", "周树人", "沈雁冰", "叶绍钧"], answer:0, explanation:"老舍原名舒庆春，字舍予，北京人，现代著名作家。"},
+            {id:12, unit:"第一单元", lesson:"《济南的冬天》", type:"字音", question:"'贮蓄'中'贮'的读音是？", options:["zhù", "chǔ", "chú", "zhǔ"], answer:0, explanation:"'贮'读 zhù，意思是储存、积存。"},
+            {id:13, unit:"第一单元", lesson:"《济南的冬天》", type:"词语解释", question:"'响晴'的意思是？", options:["晴朗无云", "响声很大", "响亮晴天", "明确晴朗"], answer:0, explanation:"'响晴'指晴朗无云，非常晴朗。"},
+            {id:14, unit:"第一单元", lesson:"《济南的冬天》", type:"课文理解", question:"济南冬天的总特点是什么？", options:["温晴", "寒冷", "多雪", "多风"], answer:0, explanation:"济南冬天的特点是'温晴'，这是文章的文眼。"},
+            {id:15, unit:"第一单元", lesson:"《济南的冬天》", type:"修辞手法", question:"'一个老城，有山有水，全在蓝天下很暖和安适地睡着'使用了什么修辞？", options:["拟人", "比喻", "排比", "对偶"], answer:0, explanation:"这是拟人句，把老城当作人来写。"},
+            {id:16, unit:"第一单元", lesson:"《济南的冬天》", type:"字形", question:"下列词语书写正确的是？", options:["澄清", "澄青", "澄情", "澄请"], answer:0, explanation:"'澄清'是正确写法，指清亮、清澈。"},
+            {id:17, unit:"第一单元", lesson:"《济南的冬天》", type:"文学常识", question:"老舍的代表作小说是？", options:["《骆驼祥子》", "《家》", "《子夜》", "《边城》"], answer:0, explanation:"老舍的代表作有《骆驼祥子》《四世同堂》等。"},
+            {id:18, unit:"第一单元", lesson:"《济南的冬天》", type:"课文理解", question:"文章主要描写了济南冬天的哪些景物？", options:["山和水", "花和草", "树和鸟", "云和雪"], answer:0, explanation:"文章主要描写了济南冬天的山和水，突出温晴特点。"},
+            {id:19, unit:"第一单元", lesson:"《济南的冬天》", type:"字音", question:"'着落'中'着'的读音是？", options:["zhuó", "zháo", "zhāo", "zhe"], answer:0, explanation:"'着落'中'着'读 zhuó，意思是下落、来源。"},
+            {id:20, unit:"第一单元", lesson:"《济南的冬天》", type:"词语解释", question:"'空灵'的意思是？", options:["灵活而不可捉摸", "空中灵动", "空洞灵活", "天空灵动"], answer:0, explanation:"'空灵'指灵活而不可捉摸，形容意境深远。"},
+
+            {id:21, unit:"第一单元", lesson:"《雨的四季》", type:"文学常识", question:"《雨的四季》的作者刘湛秋是当代什么类型的作家？", options:["诗人、翻译家", "小说家", "戏剧家", "散文家"], answer:0, explanation:"刘湛秋是当代著名诗人、翻译家。"},
+            {id:22, unit:"第一单元", lesson:"《雨的四季》", type:"字音", question:"'粗犷'中'犷'的读音是？", options:["guǎng", "kuàng", "kuāng", "guāng"], answer:0, explanation:"'犷'读 guǎng，'粗犷'指粗野、豪放。"},
+            {id:23, unit:"第一单元", lesson:"《雨的四季》", type:"词语解释", question:"'莅临'的意思是？", options:["来到、来临", "离开", "访问", "邀请"], answer:0, explanation:"'莅临'是敬辞，指来到、来临，多用于贵宾。"},
+            {id:24, unit:"第一单元", lesson:"《雨的四季》", type:"课文理解", question:"作者对雨的情感态度是？", options:["喜爱、赞美", "厌恶", "恐惧", "冷漠"], answer:0, explanation:"作者对雨充满喜爱和赞美之情。"},
+            {id:25, unit:"第一单元", lesson:"《雨的四季》", type:"字形", question:"下列词语书写正确的是？", options:["淅淅沥沥", "淅淅历历", "晰淅沥沥", "淅晰沥沥"], answer:0, explanation:"'淅淅沥沥'是正确写法，形容轻微的风雨声。"},
+
+            // 古代诗歌四首
+            {id:26, unit:"第一单元", lesson:"《观沧海》", type:"文学常识", question:"《观沧海》的作者曹操是哪个时期的人物？", options:["东汉末年", "西汉", "三国", "西晋"], answer:0, explanation:"曹操是东汉末年政治家、军事家、诗人。"},
+            {id:27, unit:"第一单元", lesson:"《观沧海》", type:"默写", question:"补全诗句：'日月之行，若出其中；______，若出其里。'", options:["星汉灿烂", "星光灿烂", "星河灿烂", "星辰灿烂"], answer:0, explanation:"原文是'日月之行，若出其中；星汉灿烂，若出其里。'"},
+            {id:28, unit:"第一单元", lesson:"《观沧海》", type:"诗歌理解", question:"《观沧海》表达了作者怎样的情怀？", options:["统一中原的雄心壮志", "思乡之情", "离别之苦", "田园之乐"], answer:0, explanation:"《观沧海》表达了曹操统一中原的雄心壮志。"},
+            {id:29, unit:"第一单元", lesson:"《闻王昌龄左迁龙标遥有此寄》", type:"文学常识", question:"《闻王昌龄左迁龙标遥有此寄》的作者是？", options:["李白", "杜甫", "白居易", "王维"], answer:0, explanation:"这首诗是李白所作，表达对友人的思念之情。"},
+            {id:30, unit:"第一单元", lesson:"《闻王昌龄左迁龙标遥有此寄》", type:"默写", question:"补全诗句：'我寄愁心与明月，______。'", options:["随君直到夜郎西", "随风直到夜郎西", "送君直到夜郎西", "伴君直到夜郎西"], answer:1, explanation:"原文是'我寄愁心与明月，随君直到夜郎西。'"},
+            {id:31, unit:"第一单元", lesson:"《次北固山下》", type:"文学常识", question:"《次北固山下》的作者是？", options:["王湾", "王维", "王之涣", "王昌龄"], answer:0, explanation:"《次北固山下》是唐代诗人王湾的作品。"},
+            {id:32, unit:"第一单元", lesson:"《次北固山下》", type:"默写", question:"补全诗句：'海日生残夜，______。'", options:["江春入旧年", "江春入新年", "春风入旧年", "春江水暖时"], answer:0, explanation:"原文是'海日生残夜，江春入旧年。'"},
+            {id:33, unit:"第一单元", lesson:"《天净沙·秋思》", type:"文学常识", question:"《天净沙·秋思》的体裁是？", options:["散曲小令", "唐诗", "宋词", "元杂剧"], answer:0, explanation:"《天净沙·秋思》是元曲中的散曲小令。"},
+            {id:34, unit:"第一单元", lesson:"《天净沙·秋思》", type:"文学常识", question:"《天净沙·秋思》的作者是？", options:["马致远", "关汉卿", "白朴", "郑光祖"], answer:0, explanation:"马致远是元代著名戏曲家、散曲家。"},
+            {id:35, unit:"第一单元", lesson:"《天净沙·秋思》", type:"默写", question:"补全句子：'夕阳西下，______。'", options:["断肠人在天涯", "思乡人在天涯", "游子在天涯", "离人在天涯"], answer:0, explanation:"原文是'夕阳西下，断肠人在天涯。'"},
+
+            // === 第二单元：亲情之爱 ===
+            {id:36, unit:"第二单元", lesson:"《秋天的怀念》", type:"文学常识", question:"《秋天的怀念》的作者是？", options:["史铁生", "莫怀戚", "朱自清", "鲁迅"], answer:0, explanation:"《秋天的怀念》是史铁生怀念母亲的散文。"},
+            {id:37, unit:"第二单元", lesson:"《秋天的怀念》", type:"字音", question:"'瘫痪'的读音是？", options:["tān huàn", "tān fàn", "tàn huàn", "tān hàn"], answer:0, explanation:"'瘫痪'读 tān huàn。"},
+            {id:38, unit:"第二单元", lesson:"《秋天的怀念》", type:"词语解释", question:"'憔悴'的意思是？", options:["形容人瘦弱，面色不好", "形容心情悲伤", "形容天气寒冷", "形容声音微弱"], answer:0, explanation:"'憔悴'形容人瘦弱，面色不好看。"},
+            {id:39, unit:"第二单元", lesson:"《秋天的怀念》", type:"课文理解", question:"文章表达了作者对母亲怎样的情感？", options:["怀念、愧疚", "感激", "怨恨", "冷漠"], answer:0, explanation:"文章表达了作者对母亲的深切怀念和愧疚之情。"},
+            {id:40, unit:"第二单元", lesson:"《秋天的怀念》", type:"文学常识", question:"史铁生的代表作是？", options:["《我与地坛》", "《活着》", "《平凡的世界》", "《白鹿原》"], answer:0, explanation:"史铁生的代表作有《我与地坛》《务虚笔记》等。"},
+
+            {id:41, unit:"第二单元", lesson:"《散步》", type:"文学常识", question:"《散步》的作者是？", options:["莫怀戚", "史铁生", "朱自清", "老舍"], answer:0, explanation:"《散步》是当代作家莫怀戚的作品。"},
+            {id:42, unit:"第二单元", lesson:"《散步》", type:"字音", question:"'分歧'中'歧'的读音是？", options:["qí", "zhī", "qī", "jì"], answer:0, explanation:"'歧'读 qí，'分歧'指意见不一致。"},
+            {id:43, unit:"第二单元", lesson:"《散步》", type:"词语解释", question:"'各得其所'的意思是？", options:["每个人或事物都得到适当的安置", "各自得到所需", "各有得失", "各取所需"], answer:0, explanation:"'各得其所'指每个人或事物都得到适当的安置。"},
+            {id:44, unit:"第二单元", lesson:"《散步》", type:"课文理解", question:"《散步》一文表达的主题是？", options:["尊老爱幼、家庭和睦", "春游乐趣", "人生哲理", "自然风光"], answer:0, explanation:"《散步》通过一家人散步的小事，表现尊老爱幼、家庭和睦的主题。"},
+            {id:45, unit:"第二单元", lesson:"《散步》", type:"字形", question:"下列词语书写正确的是？", options:["粼粼", "鳞鳞", "嶙嶙", "邻邻"], answer:0, explanation:"'粼粼'是正确写法，形容水的明净。"},
+
+            {id:46, unit:"第二单元", lesson:"《散文诗二首》", type:"文学常识", question:"《金色花》的作者是？", options:["泰戈尔（印度）", "冰心", "徐志摩", "林徽因"], answer:0, explanation:"《金色花》是印度诗人泰戈尔的作品。"},
+            {id:47, unit:"第二单元", lesson:"《散文诗二首》", type:"文学常识", question:"冰心的原名是？", options:["谢婉莹", "谢冰心", "谢冰莹", "谢婉心"], answer:0, explanation:"冰心原名谢婉莹。"},
+            {id:48, unit:"第二单元", lesson:"《散文诗二首》", type:"词语解释", question:"'匿笑'的意思是？", options:["偷偷地笑", "大声笑", "嘲笑", "苦笑"], answer:0, explanation:"'匿笑'指偷偷地笑。"},
+            {id:49, unit:"第二单元", lesson:"《散文诗二首》", type:"字形", question:"下列词语书写正确的是？", options:["祷告", "祷高", "倒告", "到告"], answer:0, explanation:"'祷告'是正确写法。"},
+            {id:50, unit:"第二单元", lesson:"《散文诗二首》", type:"词语解释", question:"'攲斜'的意思是？", options:["倾斜、歪斜", "奇怪", "倾斜站立", "歪曲"], answer:0, explanation:"'攲斜'指倾斜、歪斜。"},
+
+            {id:51, unit:"第二单元", lesson:"《世说新语》二则", type:"文学常识", question:"《世说新语》的编者是谁？", options:["刘义庆", "刘向", "刘备", "刘邦"], answer:0, explanation:"《世说新语》由南朝宋刘义庆组织编写。"},
+            {id:52, unit:"第二单元", lesson:"《咏雪》", type:"默写", question:"谢道韫把雪比作什么？", options:["未若柳絮因风起", "撒盐空中差可拟", "白雪却嫌春色晚", "千树万树梨花开"], answer:0, explanation:"谢道韫说'未若柳絮因风起'，被后人称为'咏絮才'。"},
+            {id:53, unit:"第二单元", lesson:"《咏雪》", type:"文学常识", question:"'咏絮才'后来用来形容谁？", options:["有才华的女子", "有才华的男子", "诗人", "画家"], answer:0, explanation:"'咏絮才'后来用来形容有才华的女子。"},
+            {id:54, unit:"第二单元", lesson:"《陈太丘与友期行》", type:"课文理解", question:"元方反驳友人的理由是什么？", options:["无信、无礼", "无德、无义", "无智、无勇", "无能、无力"], answer:0, explanation:"元方指出友人'日中不至，则是无信；对子骂父，则是无礼'。"},
+            {id:55, unit:"第二单元", lesson:"《陈太丘与友期行》", type:"字词解释", question:"'期行'中'期'的意思是？", options:["约定", "期望", "日期", "期限"], answer:0, explanation:"'期'在这里是约定的意思。"},
+
+            // === 第三单元：学习生活 ===
+            {id:56, unit:"第三单元", lesson:"《从百草园到三味书屋》", type:"文学常识", question:"《从百草园到三味书屋》选自鲁迅的哪部散文集？", options:["《朝花夕拾》", "《呐喊》", "《彷徨》", "《野草》"], answer:0, explanation:"本文选自鲁迅的散文集《朝花夕拾》。"},
+            {id:57, unit:"第三单元", lesson:"《从百草园到三味书屋》", type:"字音", question:"'确凿'中'凿'的读音是？", options:["záo", "zuó", "zào", "zuò"], answer:0, explanation:"'凿'读 záo，'确凿'指真实、确实。"},
+            {id:58, unit:"第三单元", lesson:"《从百草园到三味书屋》", type:"字音", question:"'菜畦'中'畦'的读音是？", options:["qí", "wā", "guī", "xí"], answer:0, explanation:"'畦'读 qí，指田园中分成的小区。"},
+            {id:59, unit:"第三单元", lesson:"《从百草园到三味书屋》", type:"字音", question:"'倜傥'的读音是？", options:["tì tǎng", "zhōu dǎng", "tì dǎng", "zhōu tǎng"], answer:0, explanation:"'倜傥'读 tì tǎng，形容洒脱、不拘束。"},
+            {id:60, unit:"第三单元", lesson:"《从百草园到三味书屋》", type:"课文理解", question:"百草园给作者留下的印象是？", options:["乐园", "苦园", "荒园", "废园"], answer:0, explanation:"百草园是作者童年的乐园，充满乐趣。"},
+            
+            {id:61, unit:"第三单元", lesson:"《再塑生命的人》", type:"文学常识", question:"《再塑生命的人》的作者是？", options:["海伦·凯勒", "安妮·莎莉文", "马克·吐温", "海伦·凯勒和安妮·莎莉文"], answer:0, explanation:"《再塑生命的人》选自海伦·凯勒的《假如给我三天光明》。"},
+            {id:62, unit:"第三单元", lesson:"《再塑生命的人》", type:"文学常识", question:"海伦·凯勒是哪个国家的人？", options:["美国", "英国", "法国", "德国"], answer:0, explanation:"海伦·凯勒是美国作家、教育家。"},
+            {id:63, unit:"第三单元", lesson:"《再塑生命的人》", type:"词语解释", question:"'截然不同'的意思是？", options:["形容两件事物毫无共同之处", "形容完全不同", "形容差别很大", "形容完全一样"], answer:0, explanation:"'截然不同'形容两件事物毫无共同之处。"},
+            {id:64, unit:"第三单元", lesson:"《再塑生命的人》", type:"词语解释", question:"'恍然大悟'的意思是？", options:["形容一下子明白过来", "形容忽然明白", "形容明白", "形容忽然理解"], answer:0, explanation:"'恍然大悟'形容一下子明白过来。"},
+            {id:65, unit:"第三单元", lesson:"《再塑生命的人》", type:"课文理解", question:"'再塑生命'在文中的意思是？", options:["重新获得生命、重塑人生", "再次塑造生命", "重新生命", "再次生命"], answer:0, explanation:"'再塑生命'指重新获得生命、重塑人生。"},
+
+            {id:66, unit:"第三单元", lesson:"《论语》十二章", type:"文学常识", question:"《论语》是记录谁及其弟子言行的书？", options:["孔子", "孟子", "老子", "庄子"], answer:0, explanation:"《论语》是记录孔子及其弟子言行的语录体著作。"},
+            {id:67, unit:"第三单元", lesson:"《论语》十二章", type:"文学常识", question:"《论语》属于什么体裁？", options:["语录体", "纪传体", "编年体", "国别体"], answer:0, explanation:"《论语》是语录体著作。"},
+            {id:68, unit:"第三单元", lesson:"《论语》十二章", type:"默写", question:"补全句子：'学而时习之，______。'", options:["不亦说乎", "不亦乐乎", "不亦悦乎", "不亦愉乎"], answer:0, explanation:"原文是'学而时习之，不亦说乎。'"},
+            {id:69, unit:"第三单元", lesson:"《论语》十二章", type:"默写", question:"补全句子：'有朋自远方来，______。'", options:["不亦乐乎", "不亦说乎", "不亦悦乎", "不亦快乎"], answer:0, explanation:"原文是'有朋自远方来，不亦乐乎。'"},
+            {id:70, unit:"第三单元", lesson:"《论语》十二章", type:"默写", question:"补全句子：'人不知而不愠，______。'", options:["不亦君子乎", "不亦大人乎", "不亦圣人乎", "不亦贤人乎"], answer:0, explanation:"原文是'人不知而不愠，不亦君子乎。'"},
+            {id:71, unit:"第三单元", lesson:"《论语》十二章", type:"字词解释", question:"'温故而知新'中'故'的意思是？", options:["旧的知识", "故事", "故意", "故乡"], answer:0, explanation:"'故'指旧的知识，学过的内容。"},
+            {id:72, unit:"第三单元", lesson:"《论语》十二章", type:"字词解释", question:"'学而不思则罔'中'罔'的意思是？", options:["迷惑", "网络", "枉然", "忘记"], answer:0, explanation:"'罔'指迷惑，意思是只学习不思考就会迷惑。"},
+            {id:73, unit:"第三单元", lesson:"《论语》十二章", type:"默写", question:"补全句子：'学而不思则罔，______。'", options:["思而不学则殆", "思而不学则怠", "思而不学则待", "思而不学则代"], answer:0, explanation:"原文是'学而不思则罔，思而不学则殆。'"},
+            {id:74, unit:"第三单元", lesson:"《论语》十二章", type:"字词解释", question:"'三人行，必有我师焉'中'师'的意思是？", options:["老师、值得学习的人", "军队", "师傅", "师范"], answer:0, explanation:"'师'指老师、值得学习的人。"},
+            {id:75, unit:"第三单元", lesson:"《论语》十二章", type:"默写", question:"补全句子：'知之者不如好之者，______。'", options:["好之者不如乐之者", "乐之者不如好之者", "好之者不如知之者", "乐之者不如知之者"], answer:0, explanation:"原文是'知之者不如好之者，好之者不如乐之者。'"},
+
+            // === 第四单元：人生之舟 ===
+            {id:76, unit:"第四单元", lesson:"《纪念白求恩》", type:"文学常识", question:"《纪念白求恩》的作者是？", options:["毛泽东", "周恩来", "朱德", "刘少奇"], answer:0, explanation:"《纪念白求恩》是毛泽东为纪念白求恩医生写的文章。"},
+            {id:77, unit:"第四单元", lesson:"《纪念白求恩》", type:"文学常识", question:"白求恩是哪国人？", options:["加拿大", "美国", "英国", "法国"], answer:0, explanation:"白求恩是加拿大共产党员、著名医生。"},
+            {id:78, unit:"第四单元", lesson:"《纪念白求恩》", type:"课文理解", question:"文章赞扬了白求恩的什么精神？", options:["国际主义精神、共产主义精神", "爱国主义精神", "英雄主义精神", "集体主义精神"], answer:0, explanation:"文章赞扬了白求恩的国际主义精神和共产主义精神。"},
+            {id:79, unit:"第四单元", lesson:"《纪念白求恩》", type:"词语解释", question:"'精益求精'的意思是？", options:["好了还求更好", "精确寻求", "精心制作", "精细求好"], answer:0, explanation:"'精益求精'指好了还求更好。"},
+            {id:80, unit:"第四单元", lesson:"《纪念白求恩》", type:"词语解释", question:"'见异思迁'的意思是？", options:["看见不同的事物就改变主意", "见到差异就迁移", "看见异乡就思念", "见到不同就思考"], answer:0, explanation:"'见异思迁'指看见不同的事物就改变主意，指意志不坚定。"},
+
+            {id:81, unit:"第四单元", lesson:"《植树的牧羊人》", type:"文学常识", question:"《植树的牧羊人》的作者是？", options:["让·乔诺（法国）", "马克·吐温（美国）", "莫泊桑（法国）", "契诃夫（俄国）"], answer:0, explanation:"《植树的牧羊人》是法国作家让·乔诺的作品。"},
+            {id:82, unit:"第四单元", lesson:"《植树的牧羊人》", type:"课文理解", question:"牧羊人植树的故事告诉我们什么道理？", options:["坚持不懈可以创造奇迹", "植树造林很重要", "牧羊人很勤劳", "环境保护很重要"], answer:0, explanation:"故事告诉我们坚持不懈、无私奉献可以创造奇迹。"},
+            {id:83, unit:"第四单元", lesson:"《植树的牧羊人》", type:"词语解释", question:"'慷慨'的意思是？", options:["大方、不吝啬", "感慨", "激昂", "感叹"], answer:0, explanation:"'慷慨'指大方、不吝啬。"},
+            {id:84, unit:"第四单元", lesson:"《植树的牧羊人》", type:"字形", question:"下列词语书写正确的是？", options:["坍塌", "瘫塌", "坍蹋", "瘫蹋"], answer:0, explanation:"'坍塌'是正确写法。"},
+            {id:85, unit:"第四单元", lesson:"《植树的牧羊人》", type:"字音", question:"'干涸'的读音是？", options:["gān hé", "gān gù", "gān kù", "gān gū"], answer:0, explanation:"'涸'读 hé。"},
+
+            {id:86, unit:"第四单元", lesson:"《走一步，再走一步》", type:"文学常识", question:"《走一步，再走一步》的作者是？", options:["莫顿·亨特（美国）", "海伦·凯勒（美国）", "马克·吐温（美国）", "欧·亨利（美国）"], answer:0, explanation:"《走一步，再走一步》是美国作家莫顿·亨特的作品。"},
+            {id:87, unit:"第四单元", lesson:"《走一步，再走一步》", type:"课文理解", question:"文章告诉我们的主要道理是？", options:["把大困难分解成小困难，逐步克服", "要勇敢攀登", "要听父母的话", "要帮助朋友"], answer:0, explanation:"文章告诉我们把大困难分解成小困难，一步一步克服。"},
+            {id:88, unit:"第四单元", lesson:"《走一步，再走一步》", type:"词语解释", question:"'晕眩'的意思是？", options:["头晕眼花", "晕倒", "眩晕症", "头晕"], answer:0, explanation:"'晕眩'指头晕眼花。"},
+            {id:89, unit:"第四单元", lesson:"《走一步，再走一步》", type:"字形", question:"下列词语书写正确的是？", options:["惊慌失措", "惊惶失措", "惊慌失错", "惊惶失错"], answer:0, explanation:"'惊慌失措'是正确写法。"},
+            {id:90, unit:"第四单元", lesson:"《走一步，再走一步》", type:"字音", question:"'附和'中'和'的读音是？", options:["hè", "hé", "huó", "huò"], answer:0, explanation:"'附和'中'和'读 hè。"},
+
+            {id:91, unit:"第四单元", lesson:"《诫子书》", type:"文学常识", question:"《诫子书》的作者是？", options:["诸葛亮", "刘备", "曹操", "孙权"], answer:0, explanation:"《诫子书》是三国时期诸葛亮写给儿子的家书。"},
+            {id:92, unit:"第四单元", lesson:"《诫子书》", type:"默写", question:"补全句子：'非淡泊无以明志，______。'", options:["非宁静无以致远", "非安静无以致远", "非平静无以致远", "非冷静无以致远"], answer:0, explanation:"原文是'非淡泊无以明志，非宁静无以致远。'"},
+            {id:93, unit:"第四单元", lesson:"《诫子书》", type:"默写", question:"补全句子：'夫君子之行，______。'", options:["静以修身，俭以养德", "静以养德，俭以修身", "动以修身，俭以养德", "静以修身，勤以养德"], answer:0, explanation:"原文是'夫君子之行，静以修身，俭以养德。'"},
+            {id:94, unit:"第四单元", lesson:"《诫子书》", type:"字词解释", question:"'淫慢'的意思是？", options:["放纵懈怠", "淫乱慢待", "过度缓慢", "傲慢无礼"], answer:0, explanation:"'淫慢'指放纵懈怠。"},
+            {id:95, unit:"第四单元", lesson:"《诫子书》", type:"字词解释", question:"'险躁'的意思是？", options:["轻薄浮躁", "危险暴躁", "险恶急躁", "冒险躁动"], answer:0, explanation:"'险躁'指轻薄浮躁。"},
+
+            // === 第五单元：动物与人 ===
+            {id:96, unit:"第五单元", lesson:"《猫》", type:"文学常识", question:"《猫》的作者是？", options:["郑振铎", "老舍", "冰心", "巴金"], answer:0, explanation:"《猫》是现代作家郑振铎的作品。"},
+            {id:97, unit:"第五单元", lesson:"《猫》", type:"课文理解", question:"文章通过写猫表达了作者怎样的情感？", options:["对弱小者的同情和对武断的悔恨", "对猫的喜爱", "对动物的保护意识", "对生活的热爱"], answer:0, explanation:"文章表达了作者对弱小者的同情和对武断判断的悔恨。"},
+            {id:98, unit:"第五单元", lesson:"《猫》", type:"词语解释", question:"'怅然'的意思是？", options:["因不如意而感到不痛快", "惆怅的样子", "茫然", "突然"], answer:0, explanation:"'怅然'指因不如意而感到不痛快。"},
+            {id:99, unit:"第五单元", lesson:"《猫》", type:"词语解释", question:"'蜷伏'的意思是？", options:["弯着身体卧着", "卷起来", "趴着", "躺着"], answer:0, explanation:"'蜷伏'指弯着身体卧着。"},
+            {id:100, unit:"第五单元", lesson:"《猫》", type:"字形", question:"下列词语书写正确的是？", options:["虐待", "虐侍", "疟待", "疟侍"], answer:0, explanation:"'虐待'是正确写法。"},
+
+            {id:101, unit:"第五单元", lesson:"《狼》", type:"文学常识", question:"《狼》选自蒲松龄的哪部作品？", options:["《聊斋志异》", "《红楼梦》", "《西游记》", "《水浒传》"], answer:0, explanation:"《狼》选自清代蒲松龄的文言短篇小说集《聊斋志异》。"},
+            {id:102, unit:"第五单元", lesson:"《狼》", type:"字词解释", question:"'缀行甚远'中'缀'的意思是？", options:["连接、紧跟", "点缀", "装饰", "停止"], answer:0, explanation:"'缀'在这里是连接、紧跟的意思。"},
+            {id:103, unit:"第五单元", lesson:"《狼》", type:"字词解释", question:"'屠自后断其股'中'股'的意思是？", options:["大腿", "屁股", "股票", "部分"], answer:0, explanation:"'股'在古文中指大腿。"},
+            {id:104, unit:"第五单元", lesson:"《狼》", type:"字词解释", question:"'禽兽之变诈几何哉'中'几何'的意思是？", options:["多少", "数学学科", "几个", "何时"], answer:0, explanation:"'几何'在这里是多少的意思。"},
+            {id:105, unit:"第五单元", lesson:"《狼》", type:"课文理解", question:"《狼》的故事告诉我们什么道理？", options:["对待像狼一样的恶势力要敢于斗争、善于斗争", "狼很狡猾", "屠户很勇敢", "不要单独行走"], answer:0, explanation:"故事告诉我们对待恶势力要敢于斗争、善于斗争。"},
+
+            // === 第六单元：想象之翼 ===
+            {id:106, unit:"第六单元", lesson:"《皇帝的新装》", type:"文学常识", question:"《皇帝的新装》的作者是？", options:["安徒生（丹麦）", "格林兄弟（德国）", "王尔德（英国）", "普希金（俄国）"], answer:0, explanation:"《皇帝的新装》是丹麦童话作家安徒生的作品。"},
+            {id:107, unit:"第六单元", lesson:"《皇帝的新装》", type:"文学常识", question:"安徒生的代表作有？", options:["《卖火柴的小女孩》《海女儿》", "《灰姑娘》《白雪公主》", "《睡美人》《青蛙王子》", "《小红帽》《狼和七只小羊》"], answer:0, explanation:"安徒生的代表作有《卖火柴的小女孩》《海女儿》《丑小鸭》等。"},
+            {id:108, unit:"第六单元", lesson:"《皇帝的新装》", type:"课文理解", question:"《皇帝的新装》讽刺了什么？", options:["统治者的虚伪和愚蠢", "骗子的狡猾", "大臣的无能", "百姓的盲从"], answer:0, explanation:"童话讽刺了统治者的虚伪和愚蠢。"},
+            {id:109, unit:"第六单元", lesson:"《皇帝的新装》", type:"词语解释", question:"'滑稽'的意思是？", options:["形容言语、动作引人发笑", "狡猾", "机智", "幽默"], answer:0, explanation:"'滑稽'形容言语、动作引人发笑。"},
+            {id:110, unit:"第六单元", lesson:"《皇帝的新装》", type:"词语解释", question:"'陛下'是对谁的尊称？", options:["皇帝", "大臣", "将军", "王子"], answer:0, explanation:"'陛下'是对皇帝的尊称。"},
+
+            {id:111, unit:"第六单元", lesson:"《天上的街市》", type:"文学常识", question:"《天上的街市》的作者是？", options:["郭沫若", "徐志摩", "闻一多", "艾青"], answer:0, explanation:"《天上的街市》是现代诗人郭沫若的作品。"},
+            {id:112, unit:"第六单元", lesson:"《天上的街市》", type:"默写", question:"补全诗句：'远远的街灯明了，______。'", options:["好像闪着无数的明星", "好像亮着无数的明灯", "好像点着无数的明灯", "好像挂着无数的明星"], answer:0, explanation:"原文是'远远的街灯明了，好像闪着无数的明星。'"},
+            {id:113, unit:"第六单元", lesson:"《天上的街市》", type:"默写", question:"补全诗句：'我想那缥缈的空中，______。'", options:["定然有美丽的街市", "定然有繁华的街市", "定然有热闹的街市", "定然有明亮的街市"], answer:0, explanation:"原文是'我想那缥缈的空中，定然有美丽的街市。'"},
+            {id:114, unit:"第六单元", lesson:"《天上的街市》", type:"修辞手法", question:"'街灯'和'明星'之间使用了什么修辞手法？", options:["比喻", "拟人", "排比", "夸张"], answer:0, explanation:"诗中把街灯比作明星，把明星比作街灯，使用了比喻。"},
+            {id:115, unit:"第六单元", lesson:"《天上的街市》", type:"诗歌理解", question:"诗歌表达了作者怎样的情感？", options:["对美好生活的向往", "对现实的不满", "对家乡的思念", "对爱情的追求"], answer:0, explanation:"诗歌表达了作者对光明、自由、美好生活的向往。"},
+
+            {id:116, unit:"第六单元", lesson:"《女娲造人》", type:"文学常识", question:"《女娲造人》属于什么体裁？", options:["神话", "童话", "寓言", "传说"], answer:0, explanation:"《女娲造人》是中国古代神话故事。"},
+            {id:117, unit:"第六单元", lesson:"《女娲造人》", type:"文学常识", question:"女娲在中国神话中是什么身份？", options:["创世神、人类始祖", "月神", "花神", "水神"], answer:0, explanation:"女娲是中国神话中的创世神和人类始祖。"},
+            {id:118, unit:"第六单元", lesson:"《女娲造人》", type:"课文理解", question:"女娲是用什么造人的？", options:["黄土", "石头", "树木", "河水"], answer:0, explanation:"神话中女娲用黄土造人。"},
+            {id:119, unit:"第六单元", lesson:"《女娲造人》", type:"字音", question:"'女娲'的读音是？", options:["nǚ wā", "nǚ guō", "nǚ wō", "nǚ guā"], answer:0, explanation:"'女娲'读 nǚ wā。"},
+            {id:120, unit:"第六单元", lesson:"《女娲造人》", type:"字形", question:"下列词语书写正确的是？", options:["神通广大", "神童广大", "神通广太", "神童广太"], answer:0, explanation:"'神通广大'是正确写法。"},
+
+            {id:121, unit:"第六单元", lesson:"《寓言四则》", type:"文学常识", question:"《赫尔墨斯和雕像者》《蚊子和狮子》选自？", options:["《伊索寓言》", "《格林童话》", "《安徒生童话》", "《一千零一夜》"], answer:0, explanation:"这两则寓言选自《伊索寓言》。"},
+            {id:122, unit:"第六单元", lesson:"《寓言四则》", type:"文学常识", question:"《伊索寓言》相传作者是？", options:["伊索（古希腊）", "伊甸（古罗马）", "伊凡（古俄国）", "伊本（古阿拉伯）"], answer:0, explanation:"《伊索寓言》相传作者是古希腊的伊索。"},
+            {id:123, unit:"第六单元", lesson:"《赫耳墨斯和雕像者》", type:"寓意理解", question:"《赫耳墨斯和雕像者》的寓意是？", options:["讽刺爱慕虚荣、妄自尊大的人", "讽刺贪心的人", "讽刺愚蠢的人", "讽刺懒惰的人"], answer:0, explanation:"寓言讽刺了那些爱慕虚荣、妄自尊大的人。"},
+            {id:124, unit:"第六单元", lesson:"《蚊子和狮子》", type:"寓意理解", question:"《蚊子和狮子》的寓意是？", options:["讽刺取得成绩就骄傲自大的人", "讽刺弱小的动物", "讽刺强大的动物", "讽刺愚蠢的动物"], answer:0, explanation:"寓言讽刺了那些取得一点成绩就骄傲自大的人。"},
+            {id:125, unit:"第六单元", lesson:"《穿井得一人》", type:"文学常识", question:"《穿井得一人》选自？", options:["《吕氏春秋》", "《战国策》", "《左传》", "《史记》"], answer:0, explanation:"《穿井得一人》选自《吕氏春秋》。"},
+            {id:126, unit:"第六单元", lesson:"《穿井得一人》", type:"寓意理解", question:"《穿井得一人》告诉我们什么道理？", options:["不要轻信传言，要调查研究", "打井很重要", "要节约人力", "要勤劳"], answer:0, explanation:"寓言告诉我们不要轻信传言，要调查研究。"},
+            {id:127, unit:"第六单元", lesson:"《杞人忧天》", type:"文学常识", question:"《杞人忧天》选自？", options:["《列子》", "《庄子》", "《老子》", "《孟子》"], answer:0, explanation:"《杞人忧天》选自《列子》。"},
+            {id:128, unit:"第六单元", lesson:"《杞人忧天》", type:"寓意理解", question:"《杞人忧天》的寓意是？", options:["讽刺不必要的担忧", "讽刺胆小的人", "讽刺愚蠢的人", "讽刺懒惰的人"], answer:0, explanation:"寓言讽刺了那些为不必要的事情担忧的人。"},
+            
+            // === 补充题目以达到300题（涵盖更多细节）===
+            // 字音专项
+            {id:129, unit:"综合", lesson:"字音", type:"字音", question:"'应和'中'和'的读音是？", options:["hè", "hé", "huó", "huò"], answer:0, explanation:"'应和'中'和'读 hè，指声音相应。"},
+            {id:130, unit:"综合", lesson:"字音", type:"字音", question:"'蓑衣'中'蓑'的读音是？", options:["suō", "shuāi", "āi", "suí"], answer:0, explanation:"'蓑'读 suō。"},
+            {id:131, unit:"综合", lesson:"字音", type:"字音", question:"'静谧'的读音是？", options:["jìng mì", "jìng bì", "jìn mì", "jìn bì"], answer:0, explanation:"'静谧'读 jìng mì。"},
+            {id:132, unit:"综合", lesson:"字音", type:"字音", question:"'吝啬'的读音是？", options:["lìn sè", "lìn shè", "lìn sē", "lìn shē"], answer:0, explanation:"'吝啬'读 lìn sè。"},
+            {id:133, unit:"综合", lesson:"字音", type:"字音", question:"'干涩'中'涩'的读音是？", options:["sè", "shè", "sē", "shē"], answer:0, explanation:"'涩'读 sè。"},
+            {id:134, unit:"综合", lesson:"字音", type:"字音", question:"'匿笑'中'匿'的读音是？", options:["nì", "nuò", "nǐ", "nè"], answer:0, explanation:"'匿'读 nì。"},
+            {id:135, unit:"综合", lesson:"字音", type:"字音", question:"'棱镜'中'棱'的读音是？", options:["léng", "líng", "lèng", "līng"], answer:0, explanation:"'棱'读 léng。"},
+            {id:136, unit:"综合", lesson:"字音", type:"字音", question:"'蝉蜕'中'蜕'的读音是？", options:["tuì", "tuō", "shuì", "ruì"], answer:0, explanation:"'蜕'读 tuì。"},
+            {id:137, unit:"综合", lesson:"字音", type:"字音", question:"'攒成'中'攒'的读音是？", options:["cuán", "zǎn", "zàn", "cuàn"], answer:0, explanation:"'攒'在这里读 cuán。"},
+            {id:138, unit:"综合", lesson:"字音", type:"字音", question:"'殉职'的读音是？", options:["xùn zhí", "xún zhí", "xùn zhì", "xún zhì"], answer:0, explanation:"'殉职'读 xùn zhí。"},
+            {id:139, unit:"综合", lesson:"字音", type:"字音", question:"'狭隘'的读音是？", options:["xiá ài", "jiá ài", "xiá yì", "jiá yì"], answer:0, explanation:"'狭隘'读 xiá ài。"},
+            {id:140, unit:"综合", lesson:"字音", type:"字音", question:"'惩戒'的读音是？", options:["chéng jiè", "chěng jiè", "chéng xiè", "chěng xiè"], answer:0, explanation:"'惩戒'读 chéng jiè。"},
+            {id:141, unit:"综合", lesson:"字音", type:"字音", question:"'缥缈'的读音是？", options:["piāo miǎo", "piáo miǎo", "piāo miáo", "piáo miáo"], answer:0, explanation:"'缥缈'读 piāo miǎo。"},
+            {id:142, unit:"综合", lesson:"字音", type:"字音", question:"'一霎'中'霎'的读音是？", options:["shà", "chà", "sà", "zhà"], answer:0, explanation:"'霎'读 shà。"},
+            {id:143, unit:"综合", lesson:"字音", type:"字音", question:"'并蒂'中'蒂'的读音是？", options:["dì", "tí", "tì", "dí"], answer:0, explanation:"'蒂'读 dì。"},
+            {id:144, unit:"综合", lesson:"字音", type:"字音", question:"'攲斜'中'攲'的读音是？", options:["qī", "jī", "qí", "jì"], answer:0, explanation:"'攲'读 qī。"},
+            {id:145, unit:"综合", lesson:"字音", type:"字音", question:"'菡萏'的读音是？", options:["hàn dàn", "hán dàn", "hàn dān", "hán dān"], answer:0, explanation:"'菡萏'读 hàn dàn。"},
+            {id:146, unit:"综合", lesson:"字音", type:"字音", question:"'呼啸'的读音是？", options:["hū xiào", "hū xiāo", "hú xiào", "hú xiāo"], answer:0, explanation:"'呼啸'读 hū xiào。"},
+            {id:147, unit:"综合", lesson:"字音", type:"字音", question:"'坍塌'的读音是？", options:["tān tā", "tān dān", "tān tà", "dān tā"], answer:0, explanation:"'坍塌'读 tān tā。"},
+            {id:148, unit:"综合", lesson:"字音", type:"字音", question:"'灼热'的读音是？", options:["zhuó rè", "zuó rè", "zhuó ruò", "zuó ruò"], answer:0, explanation:"'灼'读 zhuó。"},
+            
+            // 字形专项
+            {id:149, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["烘托", "哄托", "洪托", "红托"], answer:0, explanation:"'烘托'是正确写法。"},
+            {id:150, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["抖擞", "斗擞", "抖数", "斗数"], answer:0, explanation:"'抖擞'是正确写法。"},
+            {id:151, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["诀别", "决别", "绝别", "抉别"], answer:0, explanation:"'诀别'是正确写法。"},
+            {id:152, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["翻来覆去", "翻来复去", "反来覆去", "番来覆去"], answer:0, explanation:"'翻来覆去'是正确写法。"},
+            {id:153, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["人迹罕至", "人迹罕致", "人迹汉至", "人迹汗至"], answer:0, explanation:"'人迹罕至'是正确写法。"},
+            {id:154, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["人声鼎沸", "人声顶沸", "人声鼎拂", "人声顶拂"], answer:0, explanation:"'人声鼎沸'是正确写法。"},
+            {id:155, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["麻木不仁", "麻木不人", "麻目不仁", "麻木不忍"], answer:0, explanation:"'麻木不仁'是正确写法。"},
+            {id:156, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["拈轻怕重", "沾轻怕重", "掂轻怕重", "粘轻怕重"], answer:0, explanation:"'拈轻怕重'是正确写法。"},
+            {id:157, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["畏罪潜逃", "畏罪浅逃", "畏罪谴逃", "畏罪欠逃"], answer:0, explanation:"'畏罪潜逃'是正确写法。"},
+            {id:158, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["随声附和", "随声附合", "随声付和", "随声付合"], answer:0, explanation:"'随声附和'是正确写法。"},
+            {id:159, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["疲倦不堪", "皮倦不堪", "疲倦不勘", "皮倦不勘"], answer:0, explanation:"'疲倦不堪'是正确写法。"},
+            {id:160, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["小心翼翼", "小心冀冀", "小心异异", "小心奕奕"], answer:0, explanation:"'小心翼翼'是正确写法。"},
+            {id:161, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["截然不同", "结然不同", "截然不铜", "结然不铜"], answer:0, explanation:"'截然不同'是正确写法。"},
+            {id:162, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["恍然大悟", "恍然大误", "晃然大悟", "晃然大误"], answer:0, explanation:"'恍然大悟'是正确写法。"},
+            {id:163, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["沉默寡言", "沉莫寡言", "沉墨寡言", "沉末寡言"], answer:0, explanation:"'沉默寡言'是正确写法。"},
+            {id:164, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["刨根问底", "抱根问底", "跑根问底", "泡根问底"], answer:0, explanation:"'刨根问底'是正确写法。"},
+            {id:165, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["漠不关心", "莫不关心", "墨不关心", "默不关心"], answer:0, explanation:"'漠不关心'是正确写法。"},
+            {id:166, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["精益求精", "精易求精", "精易求经", "经益求精"], answer:0, explanation:"'精益求精'是正确写法。"},
+            {id:167, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["参差不齐", "参次不齐", "参差不起", "参次不起"], answer:0, explanation:"'参差不齐'是正确写法。"},
+            {id:168, unit:"综合", lesson:"字形", type:"字形", question:"下列词语书写正确的是？", options:["骇人听闻", "害人听闻", "孩人听闻", "还人听闻"], answer:0, explanation:"'骇人听闻'是正确写法。"},
+
+            // 词语解释专项
+            {id:169, unit:"综合", lesson:"词语", type:"词语解释", question:"'咄咄逼人'的意思是？", options:["形容气势汹汹、盛气凌人", "形容说话声音大", "形容动作迅速", "形容态度友好"], answer:0, explanation:"'咄咄逼人'形容气势汹汹、盛气凌人。"},
+            {id:170, unit:"综合", lesson:"词语", type:"词语解释", question:"'喜出望外'的意思是？", options:["遇到出乎意料的好事而特别高兴", "希望之外", "喜欢外出", "喜悦超过期望"], answer:0, explanation:"'喜出望外'指遇到出乎意料的好事而特别高兴。"},
+            {id:171, unit:"综合", lesson:"词语", type:"词语解释", question:"'不求甚解'的意思是？", options:["只求懂得大概，不求深刻理解", "不要求理解", "不理解", "不需要理解"], answer:0, explanation:"'不求甚解'指只求懂得大概，不求深刻理解。"},
+            {id:172, unit:"综合", lesson:"词语", type:"词语解释", question:"'花团锦簇'的意思是？", options:["形容五彩缤纷、十分华丽的景象", "形容花很多", "形容团结", "形容锦绣"], answer:0, explanation:"'花团锦簇'形容五彩缤纷、十分华丽的景象。"},
+            {id:173, unit:"综合", lesson:"词语", type:"词语解释", question:"'美不胜收'的意思是？", options:["美好的东西太多，一时接受不完", "美丽无法收获", "美丽的东西很少", "美丽的景色"], answer:0, explanation:"'美不胜收'指美好的东西太多，一时接受不完。"},
+            {id:174, unit:"综合", lesson:"词语", type:"词语解释", question:"'混为一谈'的意思是？", options:["把不同的事物混在一起，当作同样的事物谈论", "混合谈话", "混淆视听", "胡说八道"], answer:0, explanation:"'混为一谈'指把不同的事物混在一起，当作同样的事物谈论。"},
+            {id:175, unit:"综合", lesson:"词语", type:"词语解释", question:"'油然而生'的意思是？", options:["自然地产生（某种思想感情）", "油然产生", "自然产生", "产生"], answer:0, explanation:"'油然而生'指自然地产生（某种思想感情）。"},
+            {id:176, unit:"综合", lesson:"词语", type:"词语解释", question:"'众目睽睽'的意思是？", options:["大家的眼睛都注视着", "很多人看着", "眼睛很多", "注视"], answer:0, explanation:"'众目睽睽'指大家的眼睛都注视着。"},
+            {id:177, unit:"综合", lesson:"词语", type:"词语解释", question:"'煞有介事'的意思是？", options:["好像真有那么回事似的", "杀人有事", "严肃做事", "慎重其事"], answer:0, explanation:"'煞有介事'指好像真有那么回事似的。"},
+            {id:178, unit:"综合", lesson:"词语", type:"词语解释", question:"'废寝忘食'的意思是？", options:["顾不得睡觉，忘记了吃饭", "废弃睡觉忘记吃饭", "不睡觉不吃饭", "忘记睡觉吃饭"], answer:0, explanation:"'废寝忘食'指顾不得睡觉，忘记了吃饭。"},
+            {id:179, unit:"综合", lesson:"词语", type:"词语解释", question:"'饥肠辘辘'的意思是？", options:["肚子饿得咕咕直响", "饥饿的肠道", "肚子饿了", "辘辘饥饿"], answer:0, explanation:"'饥肠辘辘'指肚子饿得咕咕直响。"},
+            {id:180, unit:"综合", lesson:"词语", type:"词语解释", question:"'威风凛凛'的意思是？", options:["形容声势或气派使人敬畏", "威风很大", "凛凛威风", "很有气势"], answer:0, explanation:"'威风凛凛'形容声势或气派使人敬畏。"},
+
+            // 文学常识专项
+            {id:181, unit:"综合", lesson:"文学", type:"文学常识", question:"下列作品不属于朱自清的是？", options:["《呐喊》", "《背影》", "《荷塘月色》", "《春》"], answer:0, explanation:"《呐喊》是鲁迅的作品。"},
+            {id:182, unit:"综合", lesson:"文学", type:"文学常识", question:"老舍的籍贯是？", options:["北京", "上海", "广州", "天津"], answer:0, explanation:"老舍是北京人。"},
+            {id:183, unit:"综合", lesson:"文学", type:"文学常识", question:"鲁迅的第一篇白话小说是？", options:["《狂人日记》", "《阿Q正传》", "《药》", "《祝福》"], answer:0, explanation:"《狂人日记》是鲁迅的第一篇白话小说。"},
+            {id:184, unit:"综合", lesson:"文学", type:"文学常识", question:"《聊斋志异》的体裁是？", options:["文言短篇小说集", "白话长篇小说", "诗歌集", "散文集"], answer:0, explanation:"《聊斋志异》是文言短篇小说集。"},
+            {id:185, unit:"综合", lesson:"文学", type:"文学常识", question:"安徒生是哪个国家的童话作家？", options:["丹麦", "瑞典", "挪威", "芬兰"], answer:0, explanation:"安徒生是丹麦作家。"},
+            {id:186, unit:"综合", lesson:"文学", type:"文学常识", question:"郭沫若的代表诗集是？", options:["《女神》", "《星空》", "《屈原》", "《棠棣之花》"], answer:0, explanation:"《女神》是郭沫若的代表诗集。"},
+            {id:187, unit:"综合", lesson:"文学", type:"文学常识", question:"《世说新语》记录的是哪个时期人物的言行？", options:["汉末至东晋", "春秋战国", "秦汉", "隋唐"], answer:0, explanation:"《世说新语》主要记录汉末至东晋士大夫的言行。"},
+            {id:188, unit:"综合", lesson:"文学", type:"文学常识", question:"诸葛亮是哪个时期的人物？", options:["三国", "东汉", "西汉", "西晋"], answer:0, explanation:"诸葛亮是三国时期蜀汉的丞相。"},
+            {id:189, unit:"综合", lesson:"文学", type:"文学常识", question:"《吕氏春秋》的编者是谁？", options:["吕不韦", "吕布", "吕后", "吕蒙"], answer:0, explanation:"《吕氏春秋》由吕不韦组织门客编写。"},
+            {id:190, unit:"综合", lesson:"文学", type:"文学常识", question:"《列子》属于哪家学派？", options:["道家", "儒家", "法家", "墨家"], answer:0, explanation:"《列子》是道家经典著作之一。"},
+            {id:191, unit:"综合", lesson:"文学", type:"文学常识", question:"《论语》《孟子》《大学》《中庸》合称？", options:["四书", "五经", "六艺", "七略"], answer:0, explanation:"这四部著作合称'四书'。"},
+            {id:192, unit:"综合", lesson:"文学", type:"文学常识", question:"下列不属于'四书'的是？", options:["《诗经》", "《论语》", "《孟子》", "《大学》"], answer:0, explanation:"《诗经》属于'五经'。"},
+            {id:193, unit:"综合", lesson:"文学", type:"文学常识", question:"下列属于'五经'的是？", options:["《诗经》", "《论语》", "《孟子》", "《大学》"], answer:0, explanation:"《诗经》属于'五经'。"},
+            {id:194, unit:"综合", lesson:"文学", type:"文学常识", question:"《天净沙·秋思》被称为？", options:["秋思之祖", "秋景之祖", "思乡之祖", "游子之祖"], answer:0, explanation:"《天净沙·秋思》被称为'秋思之祖'。"},
+            {id:195, unit:"综合", lesson:"文学", type:"文学常识", question:"泰戈尔获得过什么奖项？", options:["诺贝尔文学奖", "普利策奖", "茅盾文学奖", "鲁迅文学奖"], answer:0, explanation:"泰戈尔1913年获得诺贝尔文学奖。"},
+            {id:196, unit:"综合", lesson:"文学", type:"文学常识", question:"《荷叶·母亲》的作者是？", options:["冰心", "泰戈尔", "林徽因", "徐志摩"], answer:0, explanation:"《荷叶·母亲》是冰心的作品。"},
+            {id:197, unit:"综合", lesson:"文学", type:"文学常识", question:"冰心的代表作有？", options:["《繁星》《春水》", "《呐喊》《彷徨》", "《背影》《荷塘月色》", "《家》《春》《秋》"], answer:0, explanation:"冰心的代表作有《繁星》《春水》。"},
+            {id:198, unit:"综合", lesson:"文学", type:"文学常识", question:"《再塑生命的人》选自哪本书？", options:["《假如给我三天光明》", "《简·爱》", "《童年》", "《我的大学》"], answer:0, explanation:"选自海伦·凯勒的《假如给我三天光明》。"},
+            {id:199, unit:"综合", lesson:"文学", type:"文学常识", question:"海伦·凯勒的老师是？", options:["安妮·莎莉文", "马克·吐温", "贝尔", "爱迪生"], answer:0, explanation:"海伦·凯勒的老师是安妮·莎莉文。"},
+            {id:200, unit:"综合", lesson:"文学", type:"文学常识", question:"《纪念白求恩》的文体是？", options:["议论文", "记叙文", "说明文", "散文"], answer:0, explanation:"《纪念白求恩》是一篇议论文。"},
+
+            // 古诗文默写专项
+            {id:201, unit:"古诗文", lesson:"默写", type:"默写", question:"'树木丛生，百草丰茂'出自？", options:["《观沧海》", "《次北固山下》", "《闻王昌龄左迁龙标遥有此寄》", "《天净沙·秋思》"], answer:0, explanation:"出自曹操《观沧海》。"},
+            {id:202, unit:"古诗文", lesson:"默写", type:"默写", question:"'秋风萧瑟，洪波涌起'出自？", options:["《观沧海》", "《次北固山下》", "《闻王昌龄左迁龙标遥有此寄》", "《天净沙·秋思》"], answer:0, explanation:"出自曹操《观沧海》。"},
+            {id:203, unit:"古诗文", lesson:"默写", type:"默写", question:"'杨花落尽子规啼'出自？", options:["《闻王昌龄左迁龙标遥有此寄》", "《观沧海》", "《次北固山下》", "《天净沙·秋思》"], answer:0, explanation:"出自李白《闻王昌龄左迁龙标遥有此寄》。"},
+            {id:204, unit:"古诗文", lesson:"默写", type:"默写", question:"'潮平两岸阔，风正一帆悬'出自？", options:["《次北固山下》", "《观沧海》", "《闻王昌龄左迁龙标遥有此寄》", "《天净沙·秋思》"], answer:0, explanation:"出自王湾《次北固山下》。"},
+            {id:205, unit:"古诗文", lesson:"默写", type:"默写", question:"'枯藤老树昏鸦'出自？", options:["《天净沙·秋思》", "《观沧海》", "《次北固山下》", "《闻王昌龄左迁龙标遥有此寄》"], answer:0, explanation:"出自马致远《天净沙·秋思》。"},
+            {id:206, unit:"古诗文", lesson:"默写", type:"默写", question:"'逝者如斯夫，不舍昼夜'出自？", options:["《论语》", "《孟子》", "《大学》", "《中庸》"], answer:0, explanation:"出自《论语》。"},
+            {id:207, unit:"古诗文", lesson:"默写", type:"默写", question:"'三军可夺帅也，匹夫不可夺志也'出自？", options:["《论语》", "《孟子》", "《大学》", "《中庸》"], answer:0, explanation:"出自《论语》。"},
+            {id:208, unit:"古诗文", lesson:"默写", type:"默写", question:"'非学无以广才，非志无以成学'出自？", options:["《诫子书》", "《论语》", "《孟子》", "《大学》"], answer:0, explanation:"出自诸葛亮《诫子书》。"},
+            {id:209, unit:"古诗文", lesson:"默写", type:"默写", question:"'年与时驰，意与日去'出自？", options:["《诫子书》", "《论语》", "《孟子》", "《大学》"], answer:0, explanation:"出自诸葛亮《诫子书》。"},
+            {id:210, unit:"古诗文", lesson:"默写", type:"默写", question:"'撒盐空中差可拟'出自？", options:["《咏雪》", "《陈太丘与友期行》", "《论语》", "《诫子书》"], answer:0, explanation:"出自《世说新语·咏雪》。"},
+            {id:211, unit:"古诗文", lesson:"默写", type:"默写", question:"'未若柳絮因风起'出自？", options:["《咏雪》", "《陈太丘与友期行》", "《论语》", "《诫子书》"], answer:0, explanation:"出自《世说新语·咏雪》。"},
+            {id:212, unit:"古诗文", lesson:"默写", type:"默写", question:"'日中不至，则是无信'出自？", options:["《陈太丘与友期行》", "《咏雪》", "《论语》", "《诫子书》"], answer:0, explanation:"出自《世说新语·陈太丘与友期行》。"},
+            {id:213, unit:"古诗文", lesson:"默写", type:"默写", question:"'对子骂父，则是无礼'出自？", options:["《陈太丘与友期行》", "《咏雪》", "《论语》", "《诫子书》"], answer:0, explanation:"出自《世说新语·陈太丘与友期行》。"},
+            {id:214, unit:"古诗文", lesson:"默写", type:"默写", question:"'狼亦黠矣，而顷刻两毙'出自？", options:["《狼》", "《猫》", "《聊斋志异》", "《史记》"], answer:0, explanation:"出自蒲松龄《狼》。"},
+            {id:215, unit:"古诗文", lesson:"默写", type:"默写", question:"'禽兽之变诈几何哉'出自？", options:["《狼》", "《猫》", "《聊斋志异》", "《史记》"], answer:0, explanation:"出自蒲松龄《狼》。"},
+            {id:216, unit:"古诗文", lesson:"默写", type:"默写", question:"'正是江南好风景，落花时节又逢君'出自？", options:["杜甫《江南逢李龟年》", "李白《赠汪伦》", "王维《送元二使安西》", "孟浩然《过故人庄》"], answer:0, explanation:"出自杜甫《江南逢李龟年》。"},
+            {id:217, unit:"古诗文", lesson:"默写", type:"默写", question:"'遥怜故园菊，应傍战场开'出自？", options:["岑参《行军九日思长安故园》", "王维《九月九日忆山东兄弟》", "杜甫《登高》", "李白《静夜思》"], answer:0, explanation:"出自岑参《行军九日思长安故园》。"},
+            {id:218, unit:"古诗文", lesson:"默写", type:"默写", question:"'回乐烽前沙似雪，受降城外月如霜'出自？", options:["李益《夜上受降城闻笛》", "王昌龄《出塞》", "王之涣《凉州词》", "王维《使至塞上》"], answer:0, explanation:"出自李益《夜上受降城闻笛》。"},
+            {id:219, unit:"古诗文", lesson:"默写", type:"默写", question:"'峨眉山月半轮秋，影入平羌江水流'出自？", options:["李白《峨眉山月歌》", "杜甫《望岳》", "王维《山居秋暝》", "孟浩然《宿建德江》"], answer:0, explanation:"出自李白《峨眉山月歌》。"},
+            {id:220, unit:"古诗文", lesson:"默写", type:"默写", question:"'夜发清溪向三峡，思君不见下渝州'出自？", options:["李白《峨眉山月歌》", "杜甫《望岳》", "王维《山居秋暝》", "孟浩然《宿建德江》"], answer:0, explanation:"出自李白《峨眉山月歌》。"},
+
+            // 修辞手法专项
+            {id:221, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'红的像火，粉的像霞，白的像雪'使用了什么修辞手法？", options:["比喻、排比", "拟人、排比", "比喻、拟人", "夸张、排比"], answer:0, explanation:"既有比喻又有排比。"},
+            {id:222, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'鸟儿将巢安在繁花嫩叶当中，高兴起来了，呼朋引伴地卖弄清脆的喉咙'使用了什么修辞？", options:["拟人", "比喻", "排比", "夸张"], answer:0, explanation:"这是拟人句。"},
+            {id:223, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'盼望着，盼望着'使用了什么修辞手法？", options:["反复", "排比", "对偶", "夸张"], answer:0, explanation:"这是反复修辞。"},
+            {id:224, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'山朗润起来了，水涨起来了，太阳的脸红起来了'使用了什么修辞？", options:["排比、拟人", "比喻、排比", "拟人、比喻", "反复、排比"], answer:0, explanation:"这是排比句，同时'太阳的脸红起来了'是拟人。"},
+            {id:225, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'这一圈小山在冬天特别可爱，好像是把济南放在一个小摇篮里'使用了什么修辞？", options:["比喻", "拟人", "排比", "夸张"], answer:0, explanation:"这是比喻句。"},
+            {id:226, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'油蛉在这里低唱，蟋蟀们在这里弹琴'使用了什么修辞？", options:["拟人", "比喻", "排比", "夸张"], answer:0, explanation:"这是拟人句。"},
+            {id:227, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'桃树、杏树、梨树，你不让我，我不让你，都开满了花赶趟儿'使用了什么修辞？", options:["拟人", "比喻", "排比", "夸张"], answer:0, explanation:"这是拟人句。"},
+            {id:228, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'看，像牛毛，像花针，像细丝'使用了什么修辞？", options:["比喻、排比", "拟人、排比", "比喻、拟人", "夸张、排比"], answer:0, explanation:"这是比喻和排比的结合。"},
+            {id:229, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'树叶子却绿得发亮，小草也青得逼你的眼'使用了什么修辞？", options:["夸张", "比喻", "拟人", "排比"], answer:0, explanation:"'逼你的眼'使用了夸张手法。"},
+            {id:230, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'那点薄雪好像忽然害了羞'使用了什么修辞？", options:["拟人", "比喻", "排比", "夸张"], answer:0, explanation:"这是拟人句。"},
+            {id:231, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'一个人能力有大小，但只要有这点精神，就是一个高尚的人...一个有益于人民的人'使用了什么修辞？", options:["排比", "比喻", "拟人", "夸张"], answer:0, explanation:"这是排比句。"},
+            {id:232, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'这对于一班见异思迁的人...也是一个极好的教训'使用了什么修辞？", options:["对比", "比喻", "拟人", "夸张"], answer:0, explanation:"这里使用了对比手法。"},
+            {id:233, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'何满子是一丈青大娘的心尖子，肺叶子，眼珠子，命根子'使用了什么修辞？", options:["比喻、排比", "拟人、排比", "比喻、夸张", "拟人、夸张"], answer:0, explanation:"这是比喻和排比的结合。"},
+            {id:234, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'万里赴戎机，关山度若飞'使用了什么修辞？", options:["夸张", "比喻", "拟人", "排比"], answer:0, explanation:"'关山度若飞'使用了夸张。"},
+            {id:235, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'朔气传金柝，寒光照铁衣'使用了什么修辞？", options:["对偶", "比喻", "拟人", "排比"], answer:0, explanation:"这是对偶句。"},
+            {id:236, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'将军百战死，壮士十年归'使用了什么修辞？", options:["互文", "比喻", "拟人", "排比"], answer:0, explanation:"这是互文修辞。"},
+            {id:237, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'双兔傍地走，安能辨我是雄雌'使用了什么修辞？", options:["反问", "比喻", "拟人", "排比"], answer:0, explanation:"这是反问句。"},
+            {id:238, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'旦辞爷娘去，暮宿黄河边'使用了什么修辞？", options:["对偶", "比喻", "拟人", "排比"], answer:0, explanation:"这是对偶句。"},
+            {id:239, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'不闻爷娘唤女声，但闻黄河流水鸣溅溅'使用了什么修辞？", options:["对比", "比喻", "拟人", "排比"], answer:0, explanation:"这是对比手法。"},
+            {id:240, unit:"综合", lesson:"修辞", type:"修辞手法", question:"'阿爷无大儿，木兰无长兄'使用了什么修辞？", options:["对偶", "比喻", "拟人", "排比"], answer:0, explanation:"这是对偶句。"},
+
+            // 课文理解专项
+            {id:241, unit:"综合", lesson:"课文", type:"课文理解", question:"《春》的结构是？", options:["盼春-绘春-赞春", "绘春-盼春-赞春", "赞春-盼春-绘春", "盼春-赞春-绘春"], answer:0, explanation:"《春》的结构是盼春-绘春-赞春。"},
+            {id:242, unit:"综合", lesson:"课文", type:"课文理解", question:"《济南的冬天》的线索是？", options:["温晴", "寒冷", "多雪", "多风"], answer:0, explanation:"文章以'温晴'为线索贯穿全文。"},
+            {id:243, unit:"综合", lesson:"课文", type:"课文理解", question:"《散步》的叙事顺序是？", options:["顺叙", "倒叙", "插叙", "补叙"], answer:0, explanation:"《散步》采用顺叙的叙事顺序。"},
+            {id:244, unit:"综合", lesson:"课文", type:"课文理解", question:"《秋天的怀念》中母亲反复说要带儿子去看？", options:["菊花", "梅花", "桃花", "荷花"], answer:0, explanation:"母亲反复说要带儿子去看菊花。"},
+            {id:245, unit:"综合", lesson:"课文", type:"课文理解", question:"《从百草园到三味书屋》中'我'在百草园最喜欢做什么？", options:["捉虫、拔草、听故事", "读书", "写字", "画画"], answer:0, explanation:"'我'在百草园最喜欢捉虫、拔草、听故事。"},
+            {id:246, unit:"综合", lesson:"课文", type:"课文理解", question:"《观沧海》中最能体现作者博大胸怀的诗句是？", options:["日月之行，若出其中；星汉灿烂，若出其里", "水何澹澹，山岛竦峙", "树木丛生，百草丰茂", "秋风萧瑟，洪波涌起"], answer:0, explanation:"这四句最能体现曹操的博大胸怀。"},
+            {id:247, unit:"综合", lesson:"课文", type:"课文理解", question:"《闻王昌龄左迁龙标遥有此寄》中'左迁'的意思是？", options:["降职", "升职", "平调", "辞职"], answer:0, explanation:"'左迁'在古代指降职。"},
+            {id:248, unit:"综合", lesson:"课文", type:"课文理解", question:"《次北固山下》中'次'的意思是？", options:["停泊", "次序", "次要", "住宿"], answer:0, explanation:"'次'在这里是停泊的意思。"},
+            {id:249, unit:"综合", lesson:"课文", type:"课文理解", question:"《皇帝的新装》中谁说出了真相？", options:["一个小孩子", "大臣", "皇帝自己", "百姓"], answer:0, explanation:"是一个小孩子说出了真相。"},
+            {id:250, unit:"综合", lesson:"课文", type:"课文理解", question:"《狼》中屠户最后是如何杀死狼的？", options:["刀劈狼头，断其股", "用石头砸", "用火攻", "用陷阱"], answer:0, explanation:"屠户刀劈狼头，并砍断狼的大腿。"},
+
+            // 文言文阅读专项
+            {id:251, unit:"文言文", lesson:"字词", type:"字词解释", question:"'元方入门不顾'中'顾'的意思是？", options:["回头看", "照顾", "顾虑", "光顾"], answer:0, explanation:"'顾'在这里是回头看的意思。"},
+            {id:252, unit:"文言文", lesson:"字词", type:"字词解释", question:"'尊君在不'中'不'的读音和意思是？", options:["fǒu，同'否'", "bù，不是", "fǒu，不要", "bù，没有"], answer:0, explanation:"'不'通'否'，读 fǒu。"},
+            {id:253, unit:"文言文", lesson:"字词", type:"字词解释", question:"'去后乃至'中'乃'的意思是？", options:["才", "于是", "就", "却"], answer:0, explanation:"'乃'在这里是才的意思。"},
+            {id:254, unit:"文言文", lesson:"字词", type:"字词解释", question:"'未若柳絮因风起'中'因'的意思是？", options:["趁、乘", "因为", "原因", "因此"], answer:0, explanation:"'因'在这里是趁、乘的意思。"},
+            {id:255, unit:"文言文", lesson:"字词", type:"字词解释", question:"'屠暴起'中'暴'的意思是？", options:["突然", "暴躁", "暴力", "暴露"], answer:0, explanation:"'暴'在这里是突然的意思。"},
+            {id:256, unit:"文言文", lesson:"字词", type:"字词解释", question:"'目似瞑'中'瞑'的意思是？", options:["闭眼", "明亮", "模糊", "睁开"], answer:0, explanation:"'瞑'指闭眼。"},
+            {id:257, unit:"文言文", lesson:"字词", type:"字词解释", question:"'太丘舍去'中'去'的意思是？", options:["离开", "前往", "过去", "去除"], answer:0, explanation:"'去'在古文中是离开的意思。"},
+            {id:258, unit:"文言文", lesson:"字词", type:"字词解释", question:"'相委而去'中'委'的意思是？", options:["舍弃", "委托", "委屈", "委派"], answer:0, explanation:"'委'在这里是舍弃的意思。"},
+            {id:259, unit:"文言文", lesson:"字词", type:"字词解释", question:"'下车引之'中'引'的意思是？", options:["拉", "引导", "引用", "吸引"], answer:0, explanation:"'引'在这里是拉的意思。"},
+            {id:260, unit:"文言文", lesson:"字词", type:"字词解释", question:"'俄而雪骤'中'俄而'的意思是？", options:["不久、一会儿", "俄罗斯", "而且", "然后"], answer:0, explanation:"'俄而'指不久、一会儿。"},
+            
+            // 句子翻译专项
+            {id:261, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'撒盐空中差可拟'的正确翻译是？", options:["跟把盐撒在空中差不多可以相比", "撒盐在空中差不多", "撒盐在空中可以比拟", "和撒盐在空中差不多"], answer:0, explanation:"正确翻译是'跟把盐撒在空中差不多可以相比'。"},
+            {id:262, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'非人哉！与人期行，相委而去'的正确翻译是？", options:["真不是人啊！和别人相约同行，却丢下别人自己离开了", "不是人！和别人约定，相互委托离开", "不是人啊！和别人期待同行，相互委托而去", "真不是人！和别人期望同行，相委而去"], answer:0, explanation:"正确翻译是'真不是人啊！和别人相约同行，却丢下别人自己离开了'。"},
+            {id:263, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'友人惭，下车引之'的正确翻译是？", options:["友人感到惭愧，下车拉他", "友人惭愧，下车引导他", "友人感到羞愧，下车引见他", "友人惭愧，下车吸引他"], answer:0, explanation:"正确翻译是'友人感到惭愧，下车拉他'。"},
+            {id:264, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'逝者如斯夫，不舍昼夜'的正确翻译是？", options:["时光像河水一样流逝，日夜不停", "死去的人像这样，不舍昼夜", "流逝的东西像这样，不舍昼夜", "逝去的人像这样，不分昼夜"], answer:0, explanation:"正确翻译是'时光像河水一样流逝，日夜不停'。"},
+            {id:265, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'三军可夺帅也，匹夫不可夺志也'的正确翻译是？", options:["军队的主帅可以改变，普通人的志向却不可改变", "三军可以夺帅，匹夫可以夺志", "军队可以夺帅，普通人可以夺志", "三军可夺帅，匹夫不可夺志"], answer:0, explanation:"正确翻译是'军队的主帅可以改变，普通人的志向却不可改变'。"},
+            {id:266, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'一狼径去，其一犬坐于前'的正确翻译是？", options:["一只狼径直离开，另一只狼像狗一样蹲坐在前面", "一只狼直接走了，其中一只狗坐在前面", "一只狼小路走了，一只狗坐在前面", "一只狼径直去了，一只狗坐在前面"], answer:0, explanation:"正确翻译是'一只狼径直离开，另一只狼像狗一样蹲坐在前面'。"},
+            {id:267, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'乃悟前狼假寐，盖以诱敌'的正确翻译是？", options:["才明白前面的狼假装睡觉，原来是用来诱惑敌人", "于是明白前面的狼假装睡觉，大概用来诱敌", "才醒悟前面的狼假睡，原来诱敌", "才明白前面的狼假睡，大概诱敌"], answer:0, explanation:"正确翻译是'才明白前面的狼假装睡觉，原来是用来诱惑敌人'。"},
+            {id:268, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'非淡泊无以明志，非宁静无以致远'的正确翻译是？", options:["不看淡名利就无法明确志向，不宁静专一就无法达到远大目标", "不淡泊无法明志，不宁静无法致远", "不淡泊不能明志，不宁静不能致远", "不淡泊无以明志，不宁静无以致远"], answer:0, explanation:"正确翻译是'不看淡名利就无法明确志向，不宁静专一就无法达到远大目标'。"},
+            {id:269, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'淫慢则不能励精，险躁则不能治性'的正确翻译是？", options:["放纵懈怠就不能振奋精神，轻薄浮躁就不能修养性情", "淫慢不能励精，险躁不能治性", "放纵不能励精，浮躁不能治性", "淫慢则不励精，险躁则不治性"], answer:0, explanation:"正确翻译是'放纵懈怠就不能振奋精神，轻薄浮躁就不能修养性情'。"},
+            {id:270, unit:"文言文", lesson:"翻译", type:"句子翻译", question:"'年与时驰，意与日去'的正确翻译是？", options:["年纪随同时光而疾速逝去，意志随同岁月而消失", "年与时驰，意与日去", "年纪和时间一起跑，意志和日子一起去", "年岁和时间奔跑，意志和日子离去"], answer:0, explanation:"正确翻译是'年纪随同时光而疾速逝去，意志随同岁月而消失'。"},
+
+            // 综合测试题
+            {id:271, unit:"综合", lesson:"测试", type:"综合", question:"下列加点字读音全部正确的是？", options:["酝酿(yùn niàng) 黄晕(yùn) 应和(hè)", "酝酿(wēn ràng) 黄晕(yūn) 应和(hé)", "酝酿(yùn niàng) 黄晕(yūn) 应和(hé)", "酝酿(wēn ràng) 黄晕(yùn) 应和(hè)"], answer:0, explanation:"A选项全部正确。"},
+            {id:272, unit:"综合", lesson:"测试", type:"综合", question:"下列词语书写全部正确的是？", options:["呼朋引伴 花枝招展 朗润", "呼朋引半 花枝招展 朗润", "呼朋引伴 花枝招绽 朗润", "呼朋引伴 花枝招展 郎润"], answer:0, explanation:"A选项全部正确。"},
+            {id:273, unit:"综合", lesson:"测试", type:"综合", question:"下列文学常识表述正确的是？", options:["朱自清，字佩弦，现代散文家", "老舍，原名舒庆春，当代作家", "鲁迅，原名周作人，现代文学家", "曹操，字孟德，西汉政治家"], answer:0, explanation:"A选项正确，朱自清字佩弦。"},
+            {id:274, unit:"综合", lesson:"测试", type:"综合", question:"下列句子没有语病的是？", options:["春天的济南是个美丽的季节。", "济南的春天是个美丽的地方。", "济南的春天是个美丽的季节。", "春天的济南是个美丽的地方。"], answer:2, explanation:"C选项主谓搭配得当。"},
+            {id:275, unit:"综合", lesson:"测试", type:"综合", question:"下列句子使用了比喻修辞的是？", options:["春天像小姑娘。", "春天来了。", "春天很美。", "我喜欢春天。"], answer:0, explanation:"A选项使用了比喻。"},
+            {id:276, unit:"综合", lesson:"测试", type:"综合", question:"下列句子使用了拟人修辞的是？", options:["鸟儿在歌唱。", "鸟儿在飞。", "鸟儿很多。", "鸟儿很漂亮。"], answer:0, explanation:"A选项使用了拟人。"},
+            {id:277, unit:"综合", lesson:"测试", type:"综合", question:"《论语》中'学而时习之'的'习'意思是？", options:["复习、实习", "学习", "习惯", "练习"], answer:0, explanation:"'习'指复习、实习。"},
+            {id:278, unit:"综合", lesson:"测试", type:"综合", question:"《诫子书》中'静以修身'的'静'指的是？", options:["内心宁静、专一", "安静", "静止", "平静"], answer:0, explanation:"'静'指内心宁静、专一。"},
+            {id:279, unit:"综合", lesson:"测试", type:"综合", question:"下列哪位作家不是现代人？", options:["曹操", "朱自清", "老舍", "鲁迅"], answer:0, explanation:"曹操是东汉末年人物。"},
+            {id:280, unit:"综合", lesson:"测试", type:"综合", question:"下列作品属于童话的是？", options:["《皇帝的新装》", "《春》", "《济南的冬天》", "《背影》"], answer:0, explanation:"《皇帝的新装》是童话。"},
+            {id:281, unit:"综合", lesson:"测试", type:"综合", question:"下列作品属于神话的是？", options:["《女娲造人》", "《皇帝的新装》", "《春》", "《背影》"], answer:0, explanation:"《女娲造人》是神话。"},
+            {id:282, unit:"综合", lesson:"测试", type:"综合", question:"下列作品属于寓言的是？", options:["《赫耳墨斯和雕像者》", "《春》", "《济南的冬天》", "《背影》"], answer:0, explanation:"《赫耳墨斯和雕像者》是寓言。"},
+            {id:283, unit:"综合", lesson:"测试", type:"综合", question:"下列诗句描写春天的是？", options:["几处早莺争暖树", "接天莲叶无穷碧", "停车坐爱枫林晚", "千树万树梨花开"], answer:0, explanation:"A选项描写春天。"},
+            {id:284, unit:"综合", lesson:"测试", type:"综合", question:"下列诗句描写夏天的是？", options:["接天莲叶无穷碧", "几处早莺争暖树", "停车坐爱枫林晚", "千树万树梨花开"], answer:0, explanation:"A选项描写夏天。"},
+            {id:285, unit:"综合", lesson:"测试", type:"综合", question:"下列诗句描写秋天的是？", options:["停车坐爱枫林晚", "几处早莺争暖树", "接天莲叶无穷碧", "千树万树梨花开"], answer:0, explanation:"A选项描写秋天。"},
+            {id:286, unit:"综合", lesson:"测试", type:"综合", question:"下列诗句描写冬天的是？", options:["千树万树梨花开", "几处早莺争暖树", "接天莲叶无穷碧", "停车坐爱枫林晚"], answer:0, explanation:"A选项描写冬天（雪景）。"},
+            {id:287, unit:"综合", lesson:"测试", type:"综合", question:"下列词语中'之'字用法与其他三项不同的是？", options:["学而时习之", "知之者不如好之者", "曲肱而枕之", "送孟浩然之广陵"], answer:3, explanation:"D选项'之'是动词'到'，其他是代词。"},
+            {id:288, unit:"综合", lesson:"测试", type:"综合", question:"下列词语中'而'字表示转折关系的是？", options:["学而不思则罔", "学而时习之", "温故而知新", "择其善者而从之"], answer:0, explanation:"A选项'而'表示转折。"},
+            {id:289, unit:"综合", lesson:"测试", type:"综合", question:"下列词语中'而'字表示顺承关系的是？", options:["温故而知新", "学而不思则罔", "人不知而不愠", "博学而笃志"], answer:0, explanation:"A选项'而'表示顺承。"},
+            {id:290, unit:"综合", lesson:"测试", type:"综合", question:"下列词语中'而'字表示并列关系的是？", options:["博学而笃志", "学而不思则罔", "温故而知新", "人不知而不愠"], answer:0, explanation:"A选项'而'表示并列。"},
+            {id:291, unit:"综合", lesson:"测试", type:"综合", question:"下列句子节奏划分正确的是？", options:["学而/时习之", "学/而时习之", "学而时/习之", "学而时习/之"], answer:0, explanation:"A选项节奏划分正确。"},
+            {id:292, unit:"综合", lesson:"测试", type:"综合", question:"下列句子节奏划分正确的是？", options:["吾日/三省吾身", "吾/日三省吾身", "吾日三/省吾身", "吾日三省/吾身"], answer:0, explanation:"A选项节奏划分正确。"},
+            {id:293, unit:"综合", lesson:"测试", type:"综合", question:"下列句子节奏划分正确的是？", options:["非淡泊/无以明志", "非/淡泊无以明志", "非淡泊无/以明志", "非淡泊无以/明志"], answer:0, explanation:"A选项节奏划分正确。"},
+            {id:294, unit:"综合", lesson:"测试", type:"综合", question:"下列句子节奏划分正确的是？", options:["其一/犬坐于前", "其一犬/坐于前", "其/一犬坐于前", "其一犬坐/于前"], answer:0, explanation:"A选项节奏划分正确。"},
+            {id:295, unit:"综合", lesson:"测试", type:"综合", question:"下列句子节奏划分正确的是？", options:["屠/自后断其股", "屠自/后断其股", "屠自后/断其股", "屠自后断/其股"], answer:0, explanation:"A选项节奏划分正确。"},
+            {id:296, unit:"综合", lesson:"测试", type:"综合", question:"学习语文最重要的是？", options:["积累、感悟、运用", "死记硬背", "只做题", "只看课本"], answer:0, explanation:"学习语文需要积累、感悟、运用相结合。"},
+            {id:297, unit:"综合", lesson:"测试", type:"综合", question:"下列不属于鲁迅作品的是？", options:["《骆驼祥子》", "《狂人日记》", "《从百草园到三味书屋》", "《阿Q正传》"], answer:0, explanation:"《骆驼祥子》是老舍的作品。"},
+            {id:298, unit:"综合", lesson:"测试", type:"综合", question:"下列不属于老舍作品的是？", options:["《朝花夕拾》", "《骆驼祥子》", "《茶馆》", "《四世同堂》"], answer:0, explanation:"《朝花夕拾》是鲁迅的作品。"},
+            {id:299, unit:"综合", lesson:"测试", type:"综合", question:"下列不属于安徒生作品的是？", options:["《灰姑娘》", "《卖火柴的小女孩》", "《海女儿》", "《丑小鸭》"], answer:0, explanation:"《灰姑娘》是格林童话。"},
+            {id:300, unit:"综合", lesson:"测试", type:"综合", question:"下列不属于《论语》名句的是？", options:["先天下之忧而忧", "学而时习之", "三人行必有我师", "温故而知新"], answer:0, explanation:"'先天下之忧而忧'出自范仲淹《岳阳楼记》。"}
+        ];
+
+        let gameState = {
+            currentQuestion: null,
+            selectedOption: null,
+            isAnswered: false,
+            correctCount: 0,
+            wrongCount: 0,
+            streak: 0,
+            masteredIds: [],
+            knowledgePoints: [],
+            totalQuestions: 300
+        };
+
+        function init() {
+            loadProgress();
+            if (gameState.knowledgePoints.length === 0) {
+                gameState.knowledgePoints = knowledgePoints.map(kp => ({
+                    ...kp,
+                    frequency: 10,
+                    consecutiveCorrect: 0
+                }));
+            }
+            showNextQuestion();
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('chineseQuizProgress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                gameState.masteredIds = data.masteredIds || [];
+                gameState.correctCount = data.correctCount || 0;
+                gameState.wrongCount = data.wrongCount || 0;
+                gameState.knowledgePoints = data.knowledgePoints || [];
+            }
+        }
+
+        function saveProgress() {
+            const data = {
+                masteredIds: gameState.masteredIds,
+                correctCount: gameState.correctCount,
+                wrongCount: gameState.wrongCount,
+                knowledgePoints: gameState.knowledgePoints
+            };
+            localStorage.setItem('chineseQuizProgress', JSON.stringify(data));
+        }
+
+        function showNextQuestion() {
+            const available = gameState.knowledgePoints.filter(kp => 
+                !gameState.masteredIds.includes(kp.id)
+            );
+
+            if (available.length === 0) {
+                document.getElementById('gameArea').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            const totalWeight = available.reduce((sum, kp) => sum + kp.frequency, 0);
+            let random = Math.random() * totalWeight;
+            let selected = available[0];
+            
+            for (const kp of available) {
+                random -= kp.frequency;
+                if (random <= 0) {
+                    selected = kp;
+                    break;
+                }
+            }
+
+            gameState.currentQuestion = selected;
+            gameState.isAnswered = false;
+            gameState.selectedOption = null;
+
+            renderQuestion();
+            updateStats();
+        }
+
+        function renderQuestion() {
+            const q = gameState.currentQuestion;
+            document.getElementById('unitTag').textContent = q.unit;
+            document.getElementById('questionType').textContent = q.type;
+            document.getElementById('questionText').textContent = q.question;
+            
+            // 打乱选项顺序，同时记录正确答案的新位置
+            const optionIndices = [0, 1, 2, 3];
+            // Fisher-Yates 洗牌算法
+            for (let i = optionIndices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionIndices[i], optionIndices[j]] = [optionIndices[j], optionIndices[i]];
+            }
+            // 记录正确答案在打乱后的新位置
+            gameState.shuffledAnswerIndex = optionIndices.indexOf(q.answer);
+            gameState.shuffledIndices = optionIndices;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            optionIndices.forEach((originalIndex, displayIndex) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = q.options[originalIndex];
+                div.onclick = () => selectOption(displayIndex);
+                optionsContainer.appendChild(div);
+            });
+
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        function selectOption(index) {
+            if (gameState.isAnswered) return;
+            
+            gameState.selectedOption = index;
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                opt.classList.remove('selected');
+                if (i === index) opt.classList.add('selected');
+            });
+            
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        document.getElementById('submitBtn').onclick = function() {
+            if (gameState.selectedOption === null) return;
+            
+            gameState.isAnswered = true;
+            const q = gameState.currentQuestion;
+            const isCorrect = gameState.selectedOption === gameState.shuffledAnswerIndex;
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach((opt, i) => {
+                opt.classList.remove('selected');
+                if (i === gameState.shuffledAnswerIndex) opt.classList.add('correct');
+                if (i === gameState.selectedOption && !isCorrect) opt.classList.add('wrong');
+            });
+
+            const feedback = document.getElementById('feedback');
+            if (isCorrect) {
+                feedback.textContent = '✅ 正确！' + q.explanation;
+                feedback.className = 'feedback correct';
+                gameState.correctCount++;
+                gameState.streak++;
+                
+                const kp = gameState.knowledgePoints.find(k => k.id === q.id);
+                if (kp) {
+                    kp.consecutiveCorrect++;
+                    kp.frequency = Math.max(1, kp.frequency - 2);
+                    if (kp.consecutiveCorrect >= 3) {
+                        gameState.masteredIds.push(q.id);
+                    }
+                }
+                
+                showStreak();
+            } else {
+                feedback.textContent = '❌ 错误。' + q.explanation;
+                feedback.className = 'feedback wrong';
+                gameState.wrongCount++;
+                gameState.streak = 0;
+                
+                const kp = gameState.knowledgePoints.find(k => k.id === q.id);
+                if (kp) {
+                    kp.consecutiveCorrect = 0;
+                    kp.frequency = 10;
+                }
+            }
+
+            document.getElementById('submitBtn').style.display = 'none';
+            document.getElementById('nextBtn').style.display = 'block';
+            updateStats();
+            saveProgress();
+        };
+
+        document.getElementById('nextBtn').onclick = function() {
+            showNextQuestion();
+        };
+
+        function showStreak() {
+            if (gameState.streak >= 2) {
+                const indicator = document.getElementById('streakIndicator');
+                document.getElementById('streakCount').textContent = gameState.streak;
+                indicator.classList.add('show');
+                setTimeout(() => indicator.classList.remove('show'), 2000);
+            }
+        }
+
+        function updateStats() {
+            const mastered = gameState.masteredIds.length;
+            const learning = gameState.totalQuestions - mastered;
+            const total = gameState.correctCount + gameState.wrongCount;
+            const accuracy = total > 0 ? Math.round(gameState.correctCount / total * 100) : 0;
+            
+            document.getElementById('masteredCount').textContent = mastered;
+            document.getElementById('learningCount').textContent = learning;
+            document.getElementById('accuracyRate').textContent = accuracy + '%';
+            document.getElementById('progressFill').style.width = (mastered / gameState.totalQuestions * 100) + '%';
+        }
+
+        function resetProgress() {
+            if (confirm('确定要重置所有进度吗？')) {
+                localStorage.removeItem('chineseQuizProgress');
+                gameState.masteredIds = [];
+                gameState.correctCount = 0;
+                gameState.wrongCount = 0;
+                gameState.knowledgePoints = [];
+                gameState.streak = 0;
+                document.getElementById('gameArea').style.display = 'block';
+                document.getElementById('emptyState').style.display = 'none';
+                init();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
