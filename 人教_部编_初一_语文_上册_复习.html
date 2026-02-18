@@ -269,6 +269,222 @@
             50% { transform: translate(-50%, -60%) scale(1); }
             100% { opacity: 0; transform: translate(-50%, -100%) scale(0.8); }
         }
+        
+        /* 排行榜按钮 */
+        .leaderboard-btn {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .leaderboard-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
+        }
+        
+        /* 用户名输入弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .username-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            transition: border-color 0.3s ease;
+        }
+        .username-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .modal-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        /* 排行榜弹窗 */
+        .leaderboard-list {
+            max-height: 60vh;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        .leaderboard-item:hover {
+            transform: translateX(5px);
+        }
+        .leaderboard-rank {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50%;
+            margin-right: 12px;
+            background: #f5f5f5;
+            color: #666;
+        }
+        .leaderboard-item:nth-child(1) .leaderboard-rank {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            animation: goldPulse 2s ease-in-out infinite;
+        }
+        .leaderboard-item:nth-child(2) .leaderboard-rank {
+            background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+            color: white;
+        }
+        .leaderboard-item:nth-child(3) .leaderboard-rank {
+            background: linear-gradient(135deg, #CD7F32, #A0522D);
+            color: white;
+        }
+        @keyframes goldPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+        .leaderboard-item:nth-child(1),
+        .leaderboard-item:nth-child(2),
+        .leaderboard-item:nth-child(3) {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05));
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        .leaderboard-info {
+            flex: 1;
+        }
+        .leaderboard-name {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .leaderboard-score {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .leaderboard-item.current-user {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.1));
+            border: 2px solid #667eea;
+        }
+        .leaderboard-item.current-user .leaderboard-name {
+            color: #667eea;
+        }
+        .leaderboard-medal {
+            font-size: 1.5rem;
+            margin-right: 8px;
+        }
+        
+        /* 积分增加动画 */
+        .score-float {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            animation: scoreFloatUp 1.5s ease-out forwards;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        @keyframes scoreFloatUp {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            30% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+            50% { transform: translate(-50%, -60%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -100%) scale(0.8); }
+        }
+        
+        /* 自定义滚动条 */
+        .leaderboard-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .leaderboard-list::-webkit-scrollbar-track {
+            background: #f5f5f5;
+            border-radius: 3px;
+        }
+        .leaderboard-list::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -285,6 +501,12 @@
                 <div class="stat-item"><div class="stat-value" id="masteredCount">0</div><div>已掌握</div></div>
                 <div class="stat-item"><div class="stat-value" id="learningCount">300</div><div>学习中</div></div>
                 <div class="stat-item"><div class="stat-value" id="accuracyRate">0%</div><div>正确率</div></div>
+                <div class="stat-item"><div class="stat-value" id="totalScore">0</div><div>积分</div></div>
+            </div>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <button class="leaderboard-btn" onclick="showLeaderboard()">
+                    🏆 排行榜
+                </button>
             </div>
         </div>
         <div id="gameArea">
@@ -310,6 +532,27 @@
             <h2>🎉 恭喜完成！</h2>
             <p>你已经掌握了所有核心知识点！</p>
             <button class="reset-btn" onclick="resetProgress()">重新开始</button>
+        </div>
+    </div>
+    
+    <!-- 用户名输入弹窗 -->
+    <div class="modal-overlay" id="usernameModal">
+        <div class="modal-content">
+            <div class="modal-title">👋 欢迎来到伏羲语文闯关！</div>
+            <p style="color: #666; margin-bottom: 15px; text-align: center;">请输入你的昵称参与排行榜</p>
+            <input type="text" class="username-input" id="usernameInput" placeholder="请输入你的昵称（2-10个字符）" maxlength="10" onkeypress="if(event.key==='Enter')saveUsername()">
+            <button class="modal-btn modal-btn-primary" onclick="saveUsername()">开始学习</button>
+        </div>
+    </div>
+    
+    <!-- 排行榜弹窗 -->
+    <div class="modal-overlay" id="leaderboardModal">
+        <div class="modal-content" style="position: relative;">
+            <button class="modal-close" onclick="closeLeaderboard()">&times;</button>
+            <div class="modal-title">🏆 积分排行榜</div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- 排行榜列表将通过 JavaScript 动态生成 -->
+            </div>
         </div>
     </div>
     <script>
@@ -674,11 +917,27 @@
             streak: 0,
             masteredIds: [],
             knowledgePoints: [],
-            totalQuestions: 300
+            totalQuestions: 300,
+            username: '',
+            totalScore: 0,
+            levelCounts: {
+                level1: 0,
+                level2: 0,
+                level3: 0,
+                level4: 0,
+                level5: 0
+            }
         };
 
         function init() {
             loadProgress();
+            loadUserData();
+            
+            // 检查是否需要输入用户名
+            if (!gameState.username) {
+                showUsernameInput();
+            }
+            
             if (gameState.knowledgePoints.length === 0) {
                 gameState.knowledgePoints = knowledgePoints.map(kp => ({
                     ...kp,
@@ -708,6 +967,179 @@
                 knowledgePoints: gameState.knowledgePoints
             };
             localStorage.setItem('chineseQuizProgress', JSON.stringify(data));
+        }
+        
+        // ========== 用户名管理 ==========
+        function loadUserData() {
+            const saved = localStorage.getItem('chineseQuizUser');
+            if (saved) {
+                const data = JSON.parse(saved);
+                gameState.username = data.username || '';
+                gameState.totalScore = data.totalScore || 0;
+                gameState.levelCounts = data.levelCounts || {
+                    level1: 0,
+                    level2: 0,
+                    level3: 0,
+                    level4: 0,
+                    level5: 0
+                };
+            }
+        }
+        
+        function saveUserData() {
+            const data = {
+                username: gameState.username,
+                totalScore: gameState.totalScore,
+                levelCounts: gameState.levelCounts,
+                updateTime: Date.now()
+            };
+            localStorage.setItem('chineseQuizUser', JSON.stringify(data));
+        }
+        
+        function saveUsername() {
+            const input = document.getElementById('usernameInput');
+            const username = input.value.trim();
+            
+            if (username.length < 2) {
+                alert('请输入至少2个字符的昵称');
+                return;
+            }
+            
+            gameState.username = username;
+            saveUserData();
+            
+            document.getElementById('usernameModal').classList.remove('show');
+        }
+        
+        function showUsernameInput() {
+            document.getElementById('usernameModal').classList.add('show');
+            document.getElementById('usernameInput').focus();
+        }
+        
+        // ========== 积分计算 ==========
+        const SCORE_RULES = {
+            level1: 1,    // 答对一次
+            level2: 3,    // 连对3-4次
+            level3: 5,    // 连对5-9次
+            level4: 10,   // 连对10次及以上
+            level5: 50    // 已掌握（额外奖励）
+        };
+        
+        function addScore(level) {
+            const score = SCORE_RULES[level] || 0;
+            if (score <= 0) return;
+            
+            gameState.totalScore += score;
+            gameState.levelCounts[level]++;
+            
+            // 显示积分增加动画
+            showScoreAdd(score);
+            
+            // 保存用户数据并更新排行榜
+            saveUserData();
+            updateLeaderboardPosition();
+        }
+        
+        function showScoreAdd(score) {
+            const el = document.createElement('div');
+            el.className = 'score-float';
+            el.textContent = `+${score}`;
+            el.style.left = '50%';
+            el.style.top = '50%';
+            document.body.appendChild(el);
+            
+            setTimeout(() => el.remove(), 1500);
+        }
+        
+        // ========== 排行榜管理 ==========
+        function loadLeaderboard() {
+            const saved = localStorage.getItem('chineseQuizLeaderboard');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            return [];
+        }
+        
+        function saveLeaderboard(leaderboard) {
+            localStorage.setItem('chineseQuizLeaderboard', JSON.stringify(leaderboard));
+        }
+        
+        function updateLeaderboardPosition() {
+            if (!gameState.username) return;
+            
+            let leaderboard = loadLeaderboard();
+            
+            // 查找当前用户在排行榜中的位置
+            const existingIndex = leaderboard.findIndex(item => item.username === gameState.username);
+            
+            const userData = {
+                username: gameState.username,
+                score: gameState.totalScore,
+                updateTime: Date.now()
+            };
+            
+            if (existingIndex !== -1) {
+                // 更新现有用户的分数（只保留最高分）
+                if (gameState.totalScore > leaderboard[existingIndex].score) {
+                    leaderboard[existingIndex] = userData;
+                }
+            } else {
+                // 添加新用户
+                leaderboard.push(userData);
+            }
+            
+            // 按分数降序排序
+            leaderboard.sort((a, b) => b.score - a.score);
+            
+            // 只保留前50名
+            leaderboard = leaderboard.slice(0, 50);
+            
+            saveLeaderboard(leaderboard);
+        }
+        
+        function showLeaderboard() {
+            // 更新当前用户在排行榜中的位置
+            updateLeaderboardPosition();
+            
+            // 显示排行榜弹窗
+            document.getElementById('leaderboardModal').classList.add('show');
+            
+            // 渲染排行榜列表
+            renderLeaderboard();
+        }
+        
+        function closeLeaderboard() {
+            document.getElementById('leaderboardModal').classList.remove('show');
+        }
+        
+        function renderLeaderboard() {
+            const leaderboard = loadLeaderboard();
+            const container = document.getElementById('leaderboardList');
+            
+            if (leaderboard.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">暂无排行榜数据</p>';
+                return;
+            }
+            
+            let html = '';
+            
+            leaderboard.forEach((item, index) => {
+                const rank = index + 1;
+                const isCurrentUser = item.username === gameState.username;
+                const medal = rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : '';
+                
+                html += `
+                    <div class="leaderboard-item ${isCurrentUser ? 'current-user' : ''}">
+                        <div class="leaderboard-rank">${medal || rank}</div>
+                        <div class="leaderboard-info">
+                            <div class="leaderboard-name">${item.username} ${isCurrentUser ? '(你)' : ''}</div>
+                            <div class="leaderboard-score">${item.score} 分</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
         }
 
         function showNextQuestion() {
@@ -816,14 +1248,17 @@
                     kp.frequency = Math.max(1, kp.frequency - 2);
                     if (kp.consecutiveCorrect >= 3) {
                         gameState.masteredIds.push(q.id);
-                        // 触发已掌握特效
-                        Effects.trigger(true, gameState.streak, true);
+                        // 触发已掌握特效并增加积分
+                        const level = Effects.trigger(true, gameState.streak, true);
+                        if (level) addScore(level);
                     } else {
-                        // 触发普通答对特效
-                        Effects.trigger(true, gameState.streak, false);
+                        // 触发普通答对特效并增加积分
+                        const level = Effects.trigger(true, gameState.streak, false);
+                        if (level) addScore(level);
                     }
                 } else {
-                    Effects.trigger(true, gameState.streak, false);
+                    const level = Effects.trigger(true, gameState.streak, false);
+                    if (level) addScore(level);
                 }
                 
                 showStreak();
@@ -1147,19 +1582,28 @@
             
             // 根据情况触发相应等级特效
             trigger(isCorrect, streak, isMastered) {
-                if (!isCorrect) return;
+                if (!isCorrect) return null;
+                
+                let level = null;
                 
                 if (isMastered) {
                     this.level5_Mastered();
+                    level = 'level5';
                 } else if (streak >= 10) {
                     this.level4_Streak10(streak);
+                    level = 'level4';
                 } else if (streak >= 5) {
                     this.level3_Streak5(streak);
+                    level = 'level3';
                 } else if (streak >= 3) {
                     this.level2_Streak3(streak);
+                    level = 'level2';
                 } else {
                     this.level1_Correct();
+                    level = 'level1';
                 }
+                
+                return level;
             }
         };
         
@@ -1175,17 +1619,27 @@
             document.getElementById('masteredCount').textContent = mastered;
             document.getElementById('learningCount').textContent = learning;
             document.getElementById('accuracyRate').textContent = accuracy + '%';
+            document.getElementById('totalScore').textContent = gameState.totalScore;
             document.getElementById('progressFill').style.width = (mastered / gameState.totalQuestions * 100) + '%';
         }
 
         function resetProgress() {
-            if (confirm('确定要重置所有进度吗？')) {
+            if (confirm('确定要重置所有进度吗？\n注意：积分也会被重置！')) {
                 localStorage.removeItem('chineseQuizProgress');
+                localStorage.removeItem('chineseQuizUser');
                 gameState.masteredIds = [];
                 gameState.correctCount = 0;
                 gameState.wrongCount = 0;
                 gameState.knowledgePoints = [];
                 gameState.streak = 0;
+                gameState.totalScore = 0;
+                gameState.levelCounts = {
+                    level1: 0,
+                    level2: 0,
+                    level3: 0,
+                    level4: 0,
+                    level5: 0
+                };
                 document.getElementById('gameArea').style.display = 'block';
                 document.getElementById('emptyState').style.display = 'none';
                 init();
