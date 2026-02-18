@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>人教版初一语文核心知识点闯关-随机</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -549,9 +554,99 @@
     <div class="modal-overlay" id="leaderboardModal">
         <div class="modal-content" style="position: relative;">
             <button class="modal-close" onclick="closeLeaderboard()">&times;</button>
-            <div class="modal-title">🏆 积分排行榜</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div class="modal-title" style="margin-bottom: 0;">🏆 积分排行榜</div>
+                <button onclick="showFirebaseConfig()" style="background: #667eea; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem;">⚙️ 设置</button>
+            </div>
             <div class="leaderboard-list" id="leaderboardList">
                 <!-- 排行榜列表将通过 JavaScript 动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase 配置弹窗 -->
+    <div class="modal-overlay" id="firebaseConfigModal">
+        <div class="modal-content" style="position: relative; max-width: 550px; max-height: 90vh; overflow-y: auto;">
+            <button class="modal-close" onclick="closeFirebaseConfig()">&times;</button>
+            <div class="modal-title">⚙️ Firebase 配置</div>
+            <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">
+                配置 Firebase Realtime Database 以实现跨用户排行榜实时同步。所有用户共享同一个排行榜。
+            </p>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">API Key</label>
+                <input type="password" class="username-input" id="firebase_apiKey" placeholder="AIzaSy...">
+                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
+                    Firebase 项目设置 > 常规 > API 密钥
+                </p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Auth Domain</label>
+                <input type="text" class="username-input" id="firebase_authDomain" placeholder="your-project.firebaseapp.com">
+                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
+                    Firebase 项目设置 > 常规 > 项目 ID 加上 .firebaseapp.com
+                </p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Database URL</label>
+                <input type="text" class="username-input" id="firebase_databaseURL" placeholder="https://your-project-default-rtdb.firebaseio.com">
+                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
+                    Realtime Database 设置 > 数据库 URL（重要！）
+                </p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Project ID</label>
+                <input type="text" class="username-input" id="firebase_projectId" placeholder="your-project-id">
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Storage Bucket</label>
+                <input type="text" class="username-input" id="firebase_storageBucket" placeholder="your-project.appspot.com">
+                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
+                    可选，留空则不使用 Storage
+                </p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Messaging Sender ID</label>
+                <input type="text" class="username-input" id="firebase_messagingSenderId" placeholder="1234567890">
+                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
+                    可选，留空则不使用消息推送
+                </p>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">App ID</label>
+                <input type="text" class="username-input" id="firebase_appId" placeholder="1:1234567890:web:abcdef">
+                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
+                    可选，留空则使用默认值
+                </p>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="modal-btn modal-btn-primary" onclick="saveFirebaseConfig()">保存配置</button>
+                <button class="modal-btn" onclick="clearFirebaseConfig()" style="background: #f5f5f5; color: #666;">清除配置</button>
+            </div>
+            
+            <div style="margin-top: 15px; padding: 12px; background: #e3f2fd; border-radius: 8px; font-size: 0.8rem; color: #1976d2;">
+                <strong>💡 快速开始：</strong>
+                <ol style="margin: 8px 0 0 20px; color: #555;">
+                    <li>访问 <a href="https://console.firebase.google.com/" target="_blank" style="color: #667eea;">Firebase 控制台</a> 创建项目</li>
+                    <li>创建 Realtime Database（选择测试模式）</li>
+                    <li>在项目设置中添加 Web 应用，复制配置信息</li>
+                    <li>在 Realtime Database 规则中设置为允许读写：</li>
+                </ol>
+                <code style="display: block; background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 0.75rem; overflow-x: auto;">
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+                </code>
             </div>
         </div>
     </div>
@@ -933,6 +1028,9 @@
             loadProgress();
             loadUserData();
             
+            // 初始化 Firebase
+            initFirebase();
+            
             // 检查是否需要输入用户名
             if (!gameState.username) {
                 showUsernameInput();
@@ -1052,57 +1150,255 @@
         }
         
         // ========== 排行榜管理 ==========
-        function loadLeaderboard() {
+        
+        // Firebase 配置（硬编码，所有用户共享）
+        let firebaseConfig = {
+            apiKey: "AIzaSyCh9Ar8TuQmZWtuOCTF6VzJNs_m0qbiHFk",
+            authDomain: "fuxi-chu2-yuwen-up.firebaseapp.com",
+            projectId: "fuxi-chu2-yuwen-up",
+            storageBucket: "fuxi-chu2-yuwen-up.firebasestorage.app",
+            messagingSenderId: "489932483223",
+            appId: "1:489932483223:web:d3233921d00bdbb23b17d2",
+            measurementId: "G-BPYRERB02C",
+            databaseURL: "https://fuxi-chu2-yuwen-up-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+        
+        // Firebase 数据库实例
+        let db = null;
+        
+        // 默认排行榜数据
+        const DEFAULT_LEADERBOARD = [
+            { username: '语文小天才', score: 2580, updateTime: Date.now() - 86400000 },
+            { username: '学霸小明', score: 2150, updateTime: Date.now() - 172800000 },
+            { username: '阅读达人', score: 1890, updateTime: Date.now() - 259200000 },
+            { username: '诗词王子', score: 1560, updateTime: Date.now() - 345600000 },
+            { username: '文学爱好者', score: 1340, updateTime: Date.now() - 432000000 },
+            { username: '古文高手', score: 1120, updateTime: Date.now() - 518400000 },
+            { username: '作文达人', score: 980, updateTime: Date.now() - 604800000 },
+            { username: '字词专家', score: 850, updateTime: Date.now() - 691200000 },
+            { username: '背诵王', score: 720, updateTime: Date.now() - 777600000 },
+            { username: '诗词仙子', score: 580, updateTime: Date.now() - 864000000 },
+        ];
+        
+        // 初始化 Firebase
+        function initFirebase() {
+            if (!firebaseConfig.apiKey || !firebaseConfig.databaseURL) {
+                console.warn('Firebase 配置不完整，使用本地存储');
+                return false;
+            }
+            
+            try {
+                // 避免重复初始化
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
+                db = firebase.database();
+                console.log('✅ Firebase 初始化成功');
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase 初始化失败:', error);
+                return false;
+            }
+        }
+        
+        // 从 Firebase 加载排行榜数据
+        async function loadLeaderboardFromFirebase() {
+            if (!db) {
+                console.warn('Firebase 未初始化，使用本地存储');
+                return loadLeaderboardFromLocal();
+            }
+            
+            try {
+                const snapshot = await db.ref('leaderboard').once('value');
+                const data = snapshot.val();
+                
+                if (data && Array.isArray(data)) {
+                    console.log('✅ 从 Firebase 加载排行榜数据成功');
+                    return data;
+                } else if (data && typeof data === 'object') {
+                    // 如果是对象格式，转换为数组
+                    const leaderboard = Object.values(data);
+                    console.log('✅ 从 Firebase 加载排行榜数据成功');
+                    return leaderboard;
+                } else {
+                    // 数据为空或不存在，初始化默认数据
+                    console.log('📝 排行榜数据为空，初始化默认数据');
+                    await saveLeaderboardToFirebase(DEFAULT_LEADERBOARD);
+                    return DEFAULT_LEADERBOARD;
+                }
+            } catch (error) {
+                console.error('❌ 加载排行榜数据失败:', error);
+                // 降级到本地存储
+                return loadLeaderboardFromLocal();
+            }
+        }
+        
+        // 保存排行榜数据到 Firebase
+        async function saveLeaderboardToFirebase(leaderboard) {
+            if (!db) {
+                console.warn('Firebase 未初始化，使用本地存储');
+                saveLeaderboardToLocal(leaderboard);
+                return;
+            }
+            
+            try {
+                await db.ref('leaderboard').set(leaderboard);
+                console.log('✅ 保存排行榜数据到 Firebase 成功');
+            } catch (error) {
+                console.error('❌ 保存排行榜数据到 Firebase 失败:', error);
+                // 降级到本地存储
+                saveLeaderboardToLocal(leaderboard);
+            }
+        }
+        
+        // 更新单个用户分数（更高效）
+        async function updateUserScore(username, score) {
+            if (!db) {
+                console.warn('Firebase 未初始化，使用本地存储');
+                return false;
+            }
+            
+            try {
+                const userData = {
+                    username: username,
+                    score: score,
+                    updateTime: Date.now()
+                };
+                
+                // 使用用户名作为 key，自动处理并发
+                await db.ref(`leaderboard_users/${username}`).set(userData);
+                console.log(`✅ 更新用户 ${username} 分数成功`);
+                return true;
+            } catch (error) {
+                console.error('❌ 更新用户分数失败:', error);
+                return false;
+            }
+        }
+        
+        // 获取排行榜数据（从用户数据聚合）
+        async function getLeaderboardFromUsers() {
+            if (!db) {
+                return loadLeaderboardFromLocal();
+            }
+            
+            try {
+                const snapshot = await db.ref('leaderboard_users').once('value');
+                const data = snapshot.val();
+                
+                if (data) {
+                    const leaderboard = Object.values(data);
+                    // 按分数降序排序
+                    leaderboard.sort((a, b) => b.score - a.score);
+                    // 只保留前50名
+                    return leaderboard.slice(0, 50);
+                } else {
+                    return DEFAULT_LEADERBOARD;
+                }
+            } catch (error) {
+                console.error('❌ 获取排行榜失败:', error);
+                return loadLeaderboardFromLocal();
+            }
+        }
+        
+        // 本地存储备用方案
+        function loadLeaderboardFromLocal() {
             const saved = localStorage.getItem('chineseQuizLeaderboard');
             if (saved) {
                 return JSON.parse(saved);
             }
-            return [];
+            return DEFAULT_LEADERBOARD;
         }
         
-        function saveLeaderboard(leaderboard) {
+        function saveLeaderboardToLocal(leaderboard) {
             localStorage.setItem('chineseQuizLeaderboard', JSON.stringify(leaderboard));
         }
         
-        function updateLeaderboardPosition() {
-            if (!gameState.username) return;
-            
-            let leaderboard = loadLeaderboard();
-            
-            // 查找当前用户在排行榜中的位置
-            const existingIndex = leaderboard.findIndex(item => item.username === gameState.username);
-            
-            const userData = {
-                username: gameState.username,
-                score: gameState.totalScore,
-                updateTime: Date.now()
-            };
-            
-            if (existingIndex !== -1) {
-                // 更新现有用户的分数（只保留最高分）
-                if (gameState.totalScore > leaderboard[existingIndex].score) {
-                    leaderboard[existingIndex] = userData;
-                }
-            } else {
-                // 添加新用户
-                leaderboard.push(userData);
+        // 统一的加载函数
+        async function loadLeaderboard() {
+            if (db) {
+                return await getLeaderboardFromUsers();
             }
-            
-            // 按分数降序排序
-            leaderboard.sort((a, b) => b.score - a.score);
-            
-            // 只保留前50名
-            leaderboard = leaderboard.slice(0, 50);
-            
-            saveLeaderboard(leaderboard);
+            return await loadLeaderboardFromLocal();
         }
         
-        function showLeaderboard() {
-            // 更新当前用户在排行榜中的位置
-            updateLeaderboardPosition();
+        // 统一的保存函数
+        async function saveLeaderboard(leaderboard) {
+            if (db) {
+                await saveLeaderboardToFirebase(leaderboard);
+            } else {
+                saveLeaderboardToLocal(leaderboard);
+            }
+        }
+        
+        async function updateLeaderboardPosition() {
+            if (!gameState.username) return;
             
-            // 显示排行榜弹窗
+            // 如果使用 Firebase，直接更新用户数据（更高效）
+            if (db) {
+                const userData = {
+                    username: gameState.username,
+                    score: gameState.totalScore,
+                    updateTime: Date.now()
+                };
+                
+                // 使用 Firebase 的原子更新，自动处理并发
+                const userRef = db.ref(`leaderboard_users/${gameState.username}`);
+                
+                try {
+                    const snapshot = await userRef.once('value');
+                    const existingData = snapshot.val();
+                    
+                    // 只保留最高分
+                    if (!existingData || gameState.totalScore > existingData.score) {
+                        await userRef.set(userData);
+                        console.log(`✅ 更新用户 ${gameState.username} 分数: ${gameState.totalScore}`);
+                    }
+                } catch (error) {
+                    console.error('❌ 更新用户分数失败:', error);
+                    // 降级到本地存储
+                    saveLeaderboardToLocal([userData]);
+                }
+            } else {
+                // 使用本地存储
+                let leaderboard = await loadLeaderboard();
+                
+                const existingIndex = leaderboard.findIndex(item => item.username === gameState.username);
+                const userData = {
+                    username: gameState.username,
+                    score: gameState.totalScore,
+                    updateTime: Date.now()
+                };
+                
+                if (existingIndex !== -1) {
+                    if (gameState.totalScore > leaderboard[existingIndex].score) {
+                        leaderboard[existingIndex] = userData;
+                    }
+                } else {
+                    leaderboard.push(userData);
+                }
+                
+                leaderboard.sort((a, b) => b.score - a.score);
+                leaderboard = leaderboard.slice(0, 50);
+                
+                saveLeaderboardToLocal(leaderboard);
+            }
+        }
+        
+        async function showLeaderboard() {
+            // 先显示排行榜弹窗（立即响应）
             document.getElementById('leaderboardModal').classList.add('show');
+            
+            // 然后异步更新排行榜位置（带超时保护）
+            try {
+                await Promise.race([
+                    updateLeaderboardPosition(),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Timeout')), 5000)
+                    )
+                ]);
+            } catch (error) {
+                console.warn('更新排行榜位置超时或失败，继续显示排行榜:', error);
+            }
             
             // 渲染排行榜列表
             renderLeaderboard();
@@ -1112,8 +1408,8 @@
             document.getElementById('leaderboardModal').classList.remove('show');
         }
         
-        function renderLeaderboard() {
-            const leaderboard = loadLeaderboard();
+        async function renderLeaderboard() {
+            const leaderboard = await loadLeaderboard();
             const container = document.getElementById('leaderboardList');
             
             if (leaderboard.length === 0) {
@@ -1140,6 +1436,102 @@
             });
             
             container.innerHTML = html;
+        }
+        
+        // ========== Firebase 配置管理 ==========
+        function showFirebaseConfig() {
+            // 加载已保存的配置
+            document.getElementById('firebase_apiKey').value = localStorage.getItem('firebase_apiKey') || '';
+            document.getElementById('firebase_authDomain').value = localStorage.getItem('firebase_authDomain') || '';
+            document.getElementById('firebase_databaseURL').value = localStorage.getItem('firebase_databaseURL') || '';
+            document.getElementById('firebase_projectId').value = localStorage.getItem('firebase_projectId') || '';
+            document.getElementById('firebase_storageBucket').value = localStorage.getItem('firebase_storageBucket') || '';
+            document.getElementById('firebase_messagingSenderId').value = localStorage.getItem('firebase_messagingSenderId') || '';
+            document.getElementById('firebase_appId').value = localStorage.getItem('firebase_appId') || '';
+            
+            document.getElementById('firebaseConfigModal').classList.add('show');
+        }
+        
+        function closeFirebaseConfig() {
+            document.getElementById('firebaseConfigModal').classList.remove('show');
+        }
+        
+        function saveFirebaseConfig() {
+            const config = {
+                apiKey: document.getElementById('firebase_apiKey').value.trim(),
+                authDomain: document.getElementById('firebase_authDomain').value.trim(),
+                databaseURL: document.getElementById('firebase_databaseURL').value.trim(),
+                projectId: document.getElementById('firebase_projectId').value.trim(),
+                storageBucket: document.getElementById('firebase_storageBucket').value.trim(),
+                messagingSenderId: document.getElementById('firebase_messagingSenderId').value.trim(),
+                appId: document.getElementById('firebase_appId').value.trim()
+            };
+            
+            // 验证必填字段
+            if (!config.apiKey || !config.databaseURL) {
+                alert('请至少填写 API Key 和 Database URL（这是必填项）');
+                return;
+            }
+            
+            // 保存到 localStorage
+            localStorage.setItem('firebase_apiKey', config.apiKey);
+            localStorage.setItem('firebase_authDomain', config.authDomain);
+            localStorage.setItem('firebase_databaseURL', config.databaseURL);
+            localStorage.setItem('firebase_projectId', config.projectId);
+            localStorage.setItem('firebase_storageBucket', config.storageBucket);
+            localStorage.setItem('firebase_messagingSenderId', config.messagingSenderId);
+            localStorage.setItem('firebase_appId', config.appId);
+            
+            // 更新全局配置
+            firebaseConfig = config;
+            
+            // 重新初始化 Firebase
+            const success = initFirebase();
+            
+            if (success) {
+                alert('✅ Firebase 配置保存成功！排行榜数据将实时同步到云端。');
+            } else {
+                alert('⚠️ 配置已保存，但 Firebase 初始化失败，请检查配置是否正确。');
+            }
+            
+            closeFirebaseConfig();
+            
+            // 重新加载排行榜
+            if (document.getElementById('leaderboardModal').classList.contains('show')) {
+                renderLeaderboard();
+            }
+        }
+        
+        function clearFirebaseConfig() {
+            if (confirm('确定要清除 Firebase 配置吗？清除后将使用本地存储。')) {
+                localStorage.removeItem('firebase_apiKey');
+                localStorage.removeItem('firebase_authDomain');
+                localStorage.removeItem('firebase_databaseURL');
+                localStorage.removeItem('firebase_projectId');
+                localStorage.removeItem('firebase_storageBucket');
+                localStorage.removeItem('firebase_messagingSenderId');
+                localStorage.removeItem('firebase_appId');
+                
+                firebaseConfig = {
+                    apiKey: '',
+                    authDomain: '',
+                    databaseURL: '',
+                    projectId: '',
+                    storageBucket: '',
+                    messagingSenderId: '',
+                    appId: ''
+                };
+                
+                db = null;
+                
+                alert('配置已清除');
+                closeFirebaseConfig();
+                
+                // 重新加载排行榜
+                if (document.getElementById('leaderboardModal').classList.contains('show')) {
+                    renderLeaderboard();
+                }
+            }
         }
 
         function showNextQuestion() {
