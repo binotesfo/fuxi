@@ -1000,110 +1000,110 @@
             level1_Correct() {
                 this.showText('✓ 正确', 1);
                 this.createRing('#4CAF50');
-                // 少量星星
-                for (let i = 0; i < 8; i++) {
+                // 少量星星，从中心飞出
+                for (let i = 0; i < 6; i++) {
                     setTimeout(() => {
                         this.createParticle('star', 
-                            Math.random() * window.innerWidth,
-                            Math.random() * window.innerHeight * 0.5,
-                            '#FFD700');
+                            window.innerWidth / 2,
+                            window.innerHeight * 0.25,
+                            '#4CAF50');
                     }, i * 50);
                 }
             },
             
-            // 等级2：连对3次 - 中等效果
-            level2_Streak3() {
-                this.showText('🔥 连对3次', 2);
+            // 等级2：连对3-4次 - 中等效果
+            level2_Streak3(streak) {
+                this.showText(`🔥 连对${streak}次`, 2);
                 this.flashScreen();
                 this.createRing('#FFD700');
                 this.createRing('#FFA500');
                 
-                // 金色星星爆发
-                for (let i = 0; i < 20; i++) {
+                // 金色星星从两侧飞入
+                for (let i = 0; i < 15; i++) {
                     setTimeout(() => {
                         this.createParticle('star',
-                            Math.random() * window.innerWidth,
-                            Math.random() * window.innerHeight * 0.4,
+                            (i % 2 === 0 ? 0 : window.innerWidth),
+                            window.innerHeight * 0.2 + Math.random() * window.innerHeight * 0.2,
                             '#FFD700');
-                    }, i * 30);
-                }
-                
-                // 烟花
-                setTimeout(() => {
-                    this.createFirework(window.innerWidth * 0.3, window.innerHeight * 0.3, '#FFD700');
-                    this.createFirework(window.innerWidth * 0.7, window.innerHeight * 0.3, '#FFA500');
-                }, 200);
-            },
-            
-            // 等级3：连对5次 - 强烈效果
-            level3_Streak5() {
-                this.showText('🔥 连对5次！', 3);
-                this.flashScreen();
-                this.shakeScreen();
-                
-                // 多个光环
-                this.createRing('#FF6B6B');
-                setTimeout(() => this.createRing('#FFD700'), 100);
-                setTimeout(() => this.createRing('#FF6B6B'), 200);
-                
-                // 大量爱心
-                for (let i = 0; i < 25; i++) {
-                    setTimeout(() => {
-                        this.createParticle('heart',
-                            Math.random() * window.innerWidth,
-                            Math.random() * window.innerHeight * 0.4,
-                            '#FF6B6B');
                     }, i * 40);
                 }
                 
-                // 多个烟花
-                for (let i = 0; i < 3; i++) {
-                    setTimeout(() => {
-                        this.createFirework(
-                            Math.random() * window.innerWidth,
-                            Math.random() * window.innerHeight * 0.3,
-                            ['#FF6B6B', '#FFD700', '#FF4081'][i]);
-                    }, i * 200);
-                }
-                
-                this.showComboNumber(5);
+                // 烟花在两侧
+                setTimeout(() => {
+                    this.createFirework(window.innerWidth * 0.25, window.innerHeight * 0.25, '#FFD700');
+                    this.createFirework(window.innerWidth * 0.75, window.innerHeight * 0.25, '#FFA500');
+                }, 150);
             },
             
-            // 等级4：连对10次 - 超强效果
-            level4_Streak10() {
-                this.showText('🔥 连对10次！！', 4);
+            // 等级3：连对5-9次 - 强烈效果
+            level3_Streak5(streak) {
+                this.showText(`🔥 连对${streak}次！`, 3);
                 this.flashScreen();
                 this.shakeScreen();
                 
-                // 密集光环
-                for (let i = 0; i < 5; i++) {
-                    setTimeout(() => this.createRing(['#FF1493', '#FFD700', '#00BCD4', '#FF6B6B', '#4CAF50'][i]), i * 100);
+                // 连续光环
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => this.createRing(['#FF6B6B', '#FFD700', '#FF4081'][i]), i * 100);
                 }
                 
-                // 密集粒子
-                for (let i = 0; i < 50; i++) {
+                // 大量爱心从底部升起
+                for (let i = 0; i < 20; i++) {
                     setTimeout(() => {
-                        const types = ['star', 'heart', 'confetti'];
-                        const colors = ['#FF1493', '#FFD700', '#FF6B6B', '#00BCD4'];
-                        this.createParticle(types[i % 3],
+                        this.createParticle('heart',
                             Math.random() * window.innerWidth,
-                            Math.random() * window.innerHeight * 0.4,
-                            colors[i % 4]);
-                    }, i * 20);
+                            window.innerHeight * 0.4,
+                            '#FF6B6B');
+                    }, i * 50);
                 }
                 
-                // 多个烟花
-                for (let i = 0; i < 5; i++) {
+                // 多组烟花
+                for (let i = 0; i < 4; i++) {
                     setTimeout(() => {
                         this.createFirework(
-                            Math.random() * window.innerWidth,
-                            Math.random() * window.innerHeight * 0.35,
-                            ['#FF1493', '#FFD700', '#00BCD4', '#FF6B6B', '#4CAF50'][i]);
+                            window.innerWidth * (0.2 + i * 0.2),
+                            window.innerHeight * (0.2 + Math.random() * 0.15),
+                            ['#FF6B6B', '#FFD700', '#FF4081', '#FF1493'][i]);
                     }, i * 150);
                 }
                 
-                this.showComboNumber(10);
-                this.createFallingItems('⭐', 10);
+                this.showComboNumber(streak);
+            },
+            
+            // 等级4：连对10次及以上 - 超强效果
+            level4_Streak10(streak) {
+                this.showText(`🔥 连对${streak}次！！`, 4);
+                this.flashScreen();
+                this.shakeScreen();
+                
+                // 彩虹光环
+                const rainbow = ['#FF1493', '#FFD700', '#00BCD4', '#FF6B6B', '#4CAF50', '#9C27B0'];
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => this.createRing(rainbow[i]), i * 80);
+                }
+                
+                // 混合粒子爆发
+                for (let i = 0; i < 40; i++) {
+                    setTimeout(() => {
+                        const types = ['star', 'heart', 'confetti', 'diamond'];
+                        this.createParticle(types[i % 4],
+                            Math.random() * window.innerWidth,
+                            Math.random() * window.innerHeight * 0.4,
+                            rainbow[i % 6]);
+                    }, i * 25);
+                }
+                
+                // 密集烟花
+                for (let i = 0; i < 6; i++) {
+                    setTimeout(() => {
+                        this.createFirework(
+                            Math.random() * window.innerWidth,
+                            window.innerHeight * (0.15 + Math.random() * 0.2),
+                            rainbow[i]);
+                    }, i * 120);
+                }
+                
+                this.showComboNumber(streak);
+                this.createFallingItems('⭐', 8);
             },
             
             // 等级5：已掌握 - 终极效果
@@ -1112,37 +1112,37 @@
                 this.flashScreen();
                 this.shakeScreen();
                 
-                // 超密集光环
+                // 超密集彩虹光环
+                const rainbow = ['#00FFFF', '#FFD700', '#FF1493', '#00FF00', '#FF6B6B', '#00BCD4', '#9C27B0', '#FF5722'];
                 for (let i = 0; i < 8; i++) {
-                    setTimeout(() => this.createRing(['#00FFFF', '#FFD700', '#FF1493', '#00FF00', '#FF6B6B', '#00BCD4', '#9C27B0', '#FF5722'][i]), i * 80);
+                    setTimeout(() => this.createRing(rainbow[i]), i * 60);
                 }
                 
-                // 超多粒子
-                for (let i = 0; i < 80; i++) {
+                // 超多粒子从四面八方涌入
+                for (let i = 0; i < 60; i++) {
                     setTimeout(() => {
                         const types = ['star', 'heart', 'confetti', 'diamond'];
-                        const colors = ['#FFD700', '#FF1493', '#00FFFF', '#00FF00', '#FF6B6B'];
                         this.createParticle(types[i % 4],
                             Math.random() * window.innerWidth,
                             Math.random() * window.innerHeight * 0.4,
-                            colors[i % 5]);
-                    }, i * 15);
+                            rainbow[i % 8]);
+                    }, i * 12);
                 }
                 
-                // 超多烟花
-                for (let i = 0; i < 8; i++) {
+                // 超密集烟花
+                for (let i = 0; i < 10; i++) {
                     setTimeout(() => {
                         this.createFirework(
                             Math.random() * window.innerWidth,
-                            Math.random() * window.innerHeight * 0.35,
-                            ['#00FFFF', '#FFD700', '#FF1493', '#00FF00', '#FF6B6B', '#00BCD4', '#9C27B0', '#FF5722'][i]);
-                    }, i * 100);
+                            window.innerHeight * (0.1 + Math.random() * 0.25),
+                            rainbow[i % 8]);
+                    }, i * 80);
                 }
                 
-                // 下落物品
-                this.createFallingItems('🌟', 15);
-                setTimeout(() => this.createFallingItems('💎', 10), 500);
-                setTimeout(() => this.createFallingItems('🏆', 5), 1000);
+                // 下落物品组合
+                this.createFallingItems('🌟', 12);
+                setTimeout(() => this.createFallingItems('💎', 8), 400);
+                setTimeout(() => this.createFallingItems('🏆', 4), 800);
             },
             
             // 根据情况触发相应等级特效
@@ -1152,11 +1152,11 @@
                 if (isMastered) {
                     this.level5_Mastered();
                 } else if (streak >= 10) {
-                    this.level4_Streak10();
+                    this.level4_Streak10(streak);
                 } else if (streak >= 5) {
-                    this.level3_Streak5();
+                    this.level3_Streak5(streak);
                 } else if (streak >= 3) {
-                    this.level2_Streak3();
+                    this.level2_Streak3(streak);
                 } else {
                     this.level1_Correct();
                 }
