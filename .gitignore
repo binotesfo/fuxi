@@ -1,3 +1,5 @@
 /.qoder
 AGENTS.md
 .DS_Store
+.gitignore
+README.md
