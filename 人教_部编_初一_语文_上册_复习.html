@@ -554,102 +554,13 @@
     <div class="modal-overlay" id="leaderboardModal">
         <div class="modal-content" style="position: relative;">
             <button class="modal-close" onclick="closeLeaderboard()">&times;</button>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div class="modal-title" style="margin-bottom: 0;">🏆 积分排行榜</div>
-                <button onclick="showFirebaseConfig()" style="background: #667eea; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem;">⚙️ 设置</button>
-            </div>
+            <div class="modal-title" style="margin-bottom: 20px;">🏆 积分排行榜</div>
             <div class="leaderboard-list" id="leaderboardList">
                 <!-- 排行榜列表将通过 JavaScript 动态生成 -->
             </div>
         </div>
     </div>
     
-    <!-- Firebase 配置弹窗 -->
-    <div class="modal-overlay" id="firebaseConfigModal">
-        <div class="modal-content" style="position: relative; max-width: 550px; max-height: 90vh; overflow-y: auto;">
-            <button class="modal-close" onclick="closeFirebaseConfig()">&times;</button>
-            <div class="modal-title">⚙️ Firebase 配置</div>
-            <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">
-                配置 Firebase Realtime Database 以实现跨用户排行榜实时同步。所有用户共享同一个排行榜。
-            </p>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">API Key</label>
-                <input type="password" class="username-input" id="firebase_apiKey" placeholder="AIzaSy...">
-                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
-                    Firebase 项目设置 > 常规 > API 密钥
-                </p>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Auth Domain</label>
-                <input type="text" class="username-input" id="firebase_authDomain" placeholder="your-project.firebaseapp.com">
-                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
-                    Firebase 项目设置 > 常规 > 项目 ID 加上 .firebaseapp.com
-                </p>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Database URL</label>
-                <input type="text" class="username-input" id="firebase_databaseURL" placeholder="https://your-project-default-rtdb.firebaseio.com">
-                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
-                    Realtime Database 设置 > 数据库 URL（重要！）
-                </p>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Project ID</label>
-                <input type="text" class="username-input" id="firebase_projectId" placeholder="your-project-id">
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Storage Bucket</label>
-                <input type="text" class="username-input" id="firebase_storageBucket" placeholder="your-project.appspot.com">
-                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
-                    可选，留空则不使用 Storage
-                </p>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">Messaging Sender ID</label>
-                <input type="text" class="username-input" id="firebase_messagingSenderId" placeholder="1234567890">
-                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
-                    可选，留空则不使用消息推送
-                </p>
-            </div>
-            
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #333;">App ID</label>
-                <input type="text" class="username-input" id="firebase_appId" placeholder="1:1234567890:web:abcdef">
-                <p style="font-size: 0.75rem; color: #999; margin-top: 5px;">
-                    可选，留空则使用默认值
-                </p>
-            </div>
-            
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="modal-btn modal-btn-primary" onclick="saveFirebaseConfig()">保存配置</button>
-                <button class="modal-btn" onclick="clearFirebaseConfig()" style="background: #f5f5f5; color: #666;">清除配置</button>
-            </div>
-            
-            <div style="margin-top: 15px; padding: 12px; background: #e3f2fd; border-radius: 8px; font-size: 0.8rem; color: #1976d2;">
-                <strong>💡 快速开始：</strong>
-                <ol style="margin: 8px 0 0 20px; color: #555;">
-                    <li>访问 <a href="https://console.firebase.google.com/" target="_blank" style="color: #667eea;">Firebase 控制台</a> 创建项目</li>
-                    <li>创建 Realtime Database（选择测试模式）</li>
-                    <li>在项目设置中添加 Web 应用，复制配置信息</li>
-                    <li>在 Realtime Database 规则中设置为允许读写：</li>
-                </ol>
-                <code style="display: block; background: #f5f5f5; padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 0.75rem; overflow-x: auto;">
-{
-  "rules": {
-    ".read": true,
-    ".write": true
-  }
-}
-                </code>
-            </div>
-        </div>
-    </div>
     <script>
         // 基于2024/2025最新版人教版七年级上册语文教材的300个核心知识点
         const knowledgePoints = [
@@ -1031,19 +942,23 @@
             // 初始化 Firebase
             initFirebase();
             
-            // 检查是否需要输入用户名
-            if (!gameState.username) {
-                showUsernameInput();
-            }
-            
-            if (gameState.knowledgePoints.length === 0) {
+            // 确保knowledgePoints被正确初始化
+            if (gameState.knowledgePoints.length === 0 || 
+                (gameState.knowledgePoints.length > 0 && !gameState.knowledgePoints[0].frequency)) {
                 gameState.knowledgePoints = knowledgePoints.map(kp => ({
                     ...kp,
                     frequency: 10,
                     consecutiveCorrect: 0
                 }));
             }
-            showNextQuestion();
+            
+            // 检查是否需要输入用户名
+            if (!gameState.username) {
+                showUsernameInput();
+            } else {
+                // 用户名已存在，直接显示题目
+                showNextQuestion();
+            }
         }
 
         function loadProgress() {
@@ -1107,6 +1022,9 @@
             saveUserData();
             
             document.getElementById('usernameModal').classList.remove('show');
+            
+            // 用户名确认后，显示第一道题
+            showNextQuestion();
         }
         
         function showUsernameInput() {
@@ -1438,133 +1356,36 @@
             container.innerHTML = html;
         }
         
-        // ========== Firebase 配置管理 ==========
-        function showFirebaseConfig() {
-            // 加载已保存的配置
-            document.getElementById('firebase_apiKey').value = localStorage.getItem('firebase_apiKey') || '';
-            document.getElementById('firebase_authDomain').value = localStorage.getItem('firebase_authDomain') || '';
-            document.getElementById('firebase_databaseURL').value = localStorage.getItem('firebase_databaseURL') || '';
-            document.getElementById('firebase_projectId').value = localStorage.getItem('firebase_projectId') || '';
-            document.getElementById('firebase_storageBucket').value = localStorage.getItem('firebase_storageBucket') || '';
-            document.getElementById('firebase_messagingSenderId').value = localStorage.getItem('firebase_messagingSenderId') || '';
-            document.getElementById('firebase_appId').value = localStorage.getItem('firebase_appId') || '';
+                    function showNextQuestion() {
+                        const available = gameState.knowledgePoints.filter(kp => 
+                            !gameState.masteredIds.includes(kp.id)
+                        );
             
-            document.getElementById('firebaseConfigModal').classList.add('show');
-        }
-        
-        function closeFirebaseConfig() {
-            document.getElementById('firebaseConfigModal').classList.remove('show');
-        }
-        
-        function saveFirebaseConfig() {
-            const config = {
-                apiKey: document.getElementById('firebase_apiKey').value.trim(),
-                authDomain: document.getElementById('firebase_authDomain').value.trim(),
-                databaseURL: document.getElementById('firebase_databaseURL').value.trim(),
-                projectId: document.getElementById('firebase_projectId').value.trim(),
-                storageBucket: document.getElementById('firebase_storageBucket').value.trim(),
-                messagingSenderId: document.getElementById('firebase_messagingSenderId').value.trim(),
-                appId: document.getElementById('firebase_appId').value.trim()
-            };
+                        if (available.length === 0) {
+                            document.getElementById('gameArea').style.display = 'none';
+                            document.getElementById('emptyState').style.display = 'block';
+                            return;
+                        }
             
-            // 验证必填字段
-            if (!config.apiKey || !config.databaseURL) {
-                alert('请至少填写 API Key 和 Database URL（这是必填项）');
-                return;
-            }
+                        const totalWeight = available.reduce((sum, kp) => sum + kp.frequency, 0);
+                        let random = Math.random() * totalWeight;
+                        let selected = available[0];
+                        
+                        for (const kp of available) {
+                            random -= kp.frequency;
+                            if (random <= 0) {
+                                selected = kp;
+                                break;
+                            }
+                        }
             
-            // 保存到 localStorage
-            localStorage.setItem('firebase_apiKey', config.apiKey);
-            localStorage.setItem('firebase_authDomain', config.authDomain);
-            localStorage.setItem('firebase_databaseURL', config.databaseURL);
-            localStorage.setItem('firebase_projectId', config.projectId);
-            localStorage.setItem('firebase_storageBucket', config.storageBucket);
-            localStorage.setItem('firebase_messagingSenderId', config.messagingSenderId);
-            localStorage.setItem('firebase_appId', config.appId);
+                        gameState.currentQuestion = selected;
+                        gameState.isAnswered = false;
+                        gameState.selectedOption = null;
             
-            // 更新全局配置
-            firebaseConfig = config;
-            
-            // 重新初始化 Firebase
-            const success = initFirebase();
-            
-            if (success) {
-                alert('✅ Firebase 配置保存成功！排行榜数据将实时同步到云端。');
-            } else {
-                alert('⚠️ 配置已保存，但 Firebase 初始化失败，请检查配置是否正确。');
-            }
-            
-            closeFirebaseConfig();
-            
-            // 重新加载排行榜
-            if (document.getElementById('leaderboardModal').classList.contains('show')) {
-                renderLeaderboard();
-            }
-        }
-        
-        function clearFirebaseConfig() {
-            if (confirm('确定要清除 Firebase 配置吗？清除后将使用本地存储。')) {
-                localStorage.removeItem('firebase_apiKey');
-                localStorage.removeItem('firebase_authDomain');
-                localStorage.removeItem('firebase_databaseURL');
-                localStorage.removeItem('firebase_projectId');
-                localStorage.removeItem('firebase_storageBucket');
-                localStorage.removeItem('firebase_messagingSenderId');
-                localStorage.removeItem('firebase_appId');
-                
-                firebaseConfig = {
-                    apiKey: '',
-                    authDomain: '',
-                    databaseURL: '',
-                    projectId: '',
-                    storageBucket: '',
-                    messagingSenderId: '',
-                    appId: ''
-                };
-                
-                db = null;
-                
-                alert('配置已清除');
-                closeFirebaseConfig();
-                
-                // 重新加载排行榜
-                if (document.getElementById('leaderboardModal').classList.contains('show')) {
-                    renderLeaderboard();
-                }
-            }
-        }
-
-        function showNextQuestion() {
-            const available = gameState.knowledgePoints.filter(kp => 
-                !gameState.masteredIds.includes(kp.id)
-            );
-
-            if (available.length === 0) {
-                document.getElementById('gameArea').style.display = 'none';
-                document.getElementById('emptyState').style.display = 'block';
-                return;
-            }
-
-            const totalWeight = available.reduce((sum, kp) => sum + kp.frequency, 0);
-            let random = Math.random() * totalWeight;
-            let selected = available[0];
-            
-            for (const kp of available) {
-                random -= kp.frequency;
-                if (random <= 0) {
-                    selected = kp;
-                    break;
-                }
-            }
-
-            gameState.currentQuestion = selected;
-            gameState.isAnswered = false;
-            gameState.selectedOption = null;
-
-            renderQuestion();
-            updateStats();
-        }
-
+                        renderQuestion();
+                        updateStats();
+                    }
         function renderQuestion() {
             const q = gameState.currentQuestion;
             document.getElementById('unitTag').textContent = q.unit;
