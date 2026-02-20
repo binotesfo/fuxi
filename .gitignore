@@ -1,0 +1,8 @@
+/.qoder
+AGENTS.md
+.DS_Store
+README.md
+*.log
+node_modules/
+dist/
+build/
