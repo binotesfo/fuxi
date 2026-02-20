@@ -275,6 +275,26 @@
             100% { opacity: 0; transform: translate(-50%, -100%) scale(0.8); }
         }
         
+        /* 返回按钮 */
+        .back-btn {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateX(-3px);
+        }
+        
         /* 排行榜按钮 */
         .leaderboard-btn {
             background: linear-gradient(135deg, #FFD700, #FFA500);
@@ -500,6 +520,7 @@
     <div class="streak-indicator" id="streakIndicator">🔥 连对 <span id="streakCount">0</span> 次</div>
     <div class="container">
         <div class="header">
+            <a href="index.html" class="back-btn">⬅️ 返回</a>
             <h1>📚 人教版初一语文核心知识点</h1>
             <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%"></div></div>
             <div class="stats">
