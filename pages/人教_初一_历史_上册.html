@@ -403,6 +403,10 @@
         const userManager = new UserManager(storageManager, 'username');
         const statsManager = new StatsManager(storageManager, 'historyStats');
         
+        // 暴露到全局作用域，方便调试
+        window.adaptiveAlgorithm = adaptiveAlgorithm;
+        window.historyKnowledgePoints = historyKnowledgePoints;
+        
         // DOM元素
         const elements = {
             gameArea: document.getElementById('gameArea'),
@@ -793,6 +797,9 @@
          * 初始化应用
          */
         function initApp() {
+            // 初始化所有题目状态
+            adaptiveAlgorithm.initializeStates(historyKnowledgePoints);
+            
             // 绑定按钮事件
             elements.submitBtn.onclick = submitAnswer;
             elements.nextBtn.onclick = nextQuestion;

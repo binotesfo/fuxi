@@ -207,7 +207,26 @@ class AdaptiveAlgorithm {
      */
     isAllMastered(totalQuestions) {
         const progress = this.getProgress(totalQuestions);
-        return progress.learning === 0 && progress.mastered === totalQuestions;
+        
+        // 额外验证：确保已掌握题目数 + 学习中题目数 = 总题目数
+        const totalInStates = progress.mastered + progress.learning;
+        
+        // 严格判断：必须所有题目都已掌握，且学习中的题目数为0
+        // 同时验证状态数量是否与传入的总题目数一致
+        const allMastered = progress.learning === 0 && 
+                           progress.mastered === totalQuestions &&
+                           totalInStates === totalQuestions;
+        
+        // 调试日志（可在浏览器控制台看到）
+        console.log('[isAllMastered检查]', {
+            totalQuestions: totalQuestions,
+            mastered: progress.mastered,
+            learning: progress.learning,
+            totalInStates: totalInStates,
+            allMastered: allMastered
+        });
+        
+        return allMastered;
     }
 
     /**
