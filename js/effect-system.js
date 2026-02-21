@@ -139,6 +139,12 @@ class EffectSystem {
         
         const containerRect = this.container.getBoundingClientRect();
         
+        // 将粒子限制在屏幕中央区域（答题区域），避免在顶部或底部生成
+        // 答题区域大约在屏幕的 20%-80% 高度范围内
+        const topMargin = containerRect.height * 0.2;
+        const bottomMargin = containerRect.height * 0.2;
+        const availableHeight = containerRect.height - topMargin - bottomMargin;
+        
         for (let i = 0; i < count; i++) {
             const particle = document.createElement('div');
             particle.className = `particle ${type}`;
@@ -147,8 +153,9 @@ class EffectSystem {
                 particle.style.background = color;
             }
             
+            // 在屏幕中央区域随机生成粒子
             const x = Math.random() * containerRect.width;
-            const y = Math.random() * containerRect.height;
+            const y = topMargin + Math.random() * availableHeight;
             
             particle.style.left = `${x}px`;
             particle.style.top = `${y}px`;
@@ -273,6 +280,9 @@ class EffectSystem {
         const comboDiv = document.createElement('div');
         comboDiv.className = 'combo-number';
         comboDiv.textContent = number;
+        comboDiv.style.top = '50%';
+        comboDiv.style.left = '50%';
+        comboDiv.style.transform = 'translate(-50%, -50%)';
         this.container.appendChild(comboDiv);
         
         setTimeout(() => comboDiv.remove(), 1500);

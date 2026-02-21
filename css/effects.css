@@ -222,11 +222,15 @@
 /* 连击数字飘动 */
 .combo-number {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-size: 4rem;
     font-weight: bold;
     color: #FFD700;
-    text-shadow: 0 0 20px #FF6B00, 2px 2px 0 #FF4500;
+    text-shadow: 0 0 20px #FF6B00, 2px 2px 0 #FF4500, 0 0 30px #FFD700;
     animation: comboFloat 1.5s ease-out forwards;
+    z-index: 10002;
 }
 
 @keyframes comboFloat {
@@ -256,10 +260,10 @@
     font-size: 2rem;
     font-weight: bold;
     color: #FFD700;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 2px 2px 4px rgba(0, 0, 0, 0.5);
     animation: scoreFloatUp 1.5s ease-out forwards;
     pointer-events: none;
-    z-index: 9999;
+    z-index: 10002;
 }
 
 @keyframes scoreFloatUp {
