@@ -9,9 +9,9 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: 55vh;
+    height: 100%;
     pointer-events: none;
-    z-index: 9999;
+    z-index: 10001;
     overflow: hidden;
 }
 
@@ -424,6 +424,31 @@
     background: #9966CC;
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     box-shadow: 0 0 15px rgba(153, 102, 204, 0.8);
+}
+
+/* 结算奖励粒子 */
+.particle.gold {
+    width: 15px;
+    height: 15px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+}
+
+.particle.silver {
+    width: 15px;
+    height: 15px;
+    background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(192, 192, 192, 0.9);
+}
+
+.particle.bronze {
+    width: 15px;
+    height: 15px;
+    background: linear-gradient(135deg, #CD7F32, #B87333);
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(205, 127, 50, 0.9);
 }
 
 /* 屏幕变暗 */
