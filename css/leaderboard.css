@@ -1,0 +1,193 @@
+/**
+ * 排行榜样式
+ * 包含排行榜按钮和列表的样式
+ */
+
+/* 排行榜按钮 */
+.leaderboard-btn {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.leaderboard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
+}
+
+/* 错题本按钮 */
+.wrong-book-btn {
+    background: linear-gradient(135deg, #ff6b6b, #dc143c);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(220, 20, 60, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.wrong-book-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 20, 60, 0.6);
+}
+
+.wrong-book-btn.active {
+    background: linear-gradient(135deg, #ffd700, #ff6b6b);
+    color: #1a1a2e;
+}
+
+.wrong-count {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* 按钮容器 */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+/* 排行榜列表 */
+.leaderboard-list {
+    max-height: 60vh;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+/* 排行榜项 */
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.leaderboard-item:hover {
+    transform: translateX(5px);
+}
+
+/* 排行榜排名 */
+.leaderboard-rank {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 50%;
+    margin-right: 12px;
+    background: #f5f5f5;
+    color: #666;
+}
+
+/* 前三名样式 */
+.leaderboard-item:nth-child(1) .leaderboard-rank {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: white;
+    animation: goldPulse 2s ease-in-out infinite;
+}
+
+.leaderboard-item:nth-child(2) .leaderboard-rank {
+    background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
+    color: white;
+}
+
+.leaderboard-item:nth-child(3) .leaderboard-rank {
+    background: linear-gradient(135deg, #CD7F32, #A0522D);
+    color: white;
+}
+
+@keyframes goldPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+}
+
+/* 前三名背景 */
+.leaderboard-item:nth-child(1),
+.leaderboard-item:nth-child(2),
+.leaderboard-item:nth-child(3) {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.05));
+    border: 2px solid rgba(255, 215, 0, 0.3);
+}
+
+/* 排行榜信息 */
+.leaderboard-info {
+    flex: 1;
+}
+
+/* 排行榜名称 */
+.leaderboard-name {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+/* 排行榜分数 */
+.leaderboard-score {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+/* 当前用户高亮 */
+.leaderboard-item.current-user {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.1));
+    border: 2px solid #667eea;
+}
+
+.leaderboard-item.current-user .leaderboard-name {
+    color: #667eea;
+}
+
+/* 排行榜徽章 */
+.leaderboard-medal {
+    font-size: 1.5rem;
+    margin-right: 8px;
+}
+
+/* 自定义滚动条 */
+.leaderboard-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.leaderboard-list::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 3px;
+}
+
+.leaderboard-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 3px;
+}

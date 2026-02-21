@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>人教版初一历史核心知识点闯关 - 伏羲</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- CSS样式文件 -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/effects.css">
+    <link rel="stylesheet" href="../css/leaderboard.css">
+    <link rel="stylesheet" href="../css/theme-yuwen.css">
+    
+    <style>
+        /* 历史古风主题特定样式 */
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        }
+        
+        /* 背景古风纹理 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 0, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(139, 0, 0, 0.3) 0%, transparent 100%);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .header h1 {
+            background: linear-gradient(90deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #ffd700, #ff6b6b, #8b0000);
+        }
+        
+        .stats {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.2), rgba(255, 215, 0, 0.1));
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .stat-value {
+            background: linear-gradient(90deg, #ffd700, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), 0 0 60px rgba(255, 215, 0, 0.1);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .card > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-header {
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .unit-tag {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            box-shadow: 0 2px 10px rgba(139, 0, 0, 0.5);
+        }
+        
+        .question-type {
+            background: rgba(255, 215, 0, 0.15);
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .question-text {
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .option {
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            color: #e0e0e0;
+        }
+        
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .option:hover::before {
+            left: 100%;
+        }
+        
+        .option:hover {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #ffd700;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(139, 0, 0, 0.3));
+            color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .option.correct {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.4), rgba(0, 255, 0, 0.2));
+            color: #4CAF50;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .option.wrong {
+            border-color: #f44336;
+            background: linear-gradient(135deg, rgba(244, 67, 54, 0.4), rgba(255, 0, 0, 0.2));
+            color: #f44336;
+            box-shadow: 0 0 20px rgba(244, 67, 54, 0.4);
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4);
+        }
+        
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.6);
+        }
+        
+        .btn-next {
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .btn-next:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+        }
+        
+        .feedback.correct {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .feedback.wrong {
+            background: rgba(244, 67, 54, 0.15);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+        
+        .mode-indicator {
+            background: rgba(139, 0, 0, 0.3);
+            border: 1px solid rgba(255, 215, 0, 0.5);
+        }
+        
+        .leaderboard-btn {
+            background: linear-gradient(135deg, #ffd700, #ff6b6b);
+            color: #1a1a2e;
+            border: 2px solid #8b0000;
+            box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+        }
+        
+        .wrong-book-btn {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+            box-shadow: 0 3px 10px rgba(139, 0, 0, 0.4);
+        }
+        
+        .wrong-book-btn.active {
+            background: linear-gradient(135deg, #ffd700, #8b0000);
+            color: #1a1a2e;
+            border-color: #fff;
+        }
+        
+        .streak-indicator {
+            background: rgba(26, 26, 46, 0.95);
+            border: 1px solid #8b0000;
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <!-- 特效容器 -->
+    <div class="effect-container" id="effectContainer"></div>
+    <div class="flash" id="flashOverlay"></div>
+    
+    <!-- 连对指示器 -->
+    <div class="streak-indicator" id="streakIndicator">🔥 连对 <span id="streakCount">0</span> 次</div>
+    
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-btn">⬅️ 返回</a>
+            <h1>🏯 伏羲历史闯关</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="masteredCount">0</div>
+                    <div>已掌握</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="learningCount">100</div>
+                    <div>学习中</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="accuracyRate">0%</div>
+                    <div>正确率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalScore">0</div>
+                    <div>积分</div>
+                </div>
+            </div>
+            
+            <!-- 功能按钮组 -->
+            <div class="button-group">
+                <button class="leaderboard-btn" onclick="leaderboard.show()">
+                    🏆 排行榜
+                </button>
+                <button class="wrong-book-btn" id="wrongBookBtn" onclick="toggleWrongBookMode()">
+                    📒 错题本 <span class="wrong-count" id="wrongCount">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 错题模式指示器 -->
+        <div class="mode-indicator" id="modeIndicator" style="display: none;">
+            📒 错题本模式 - 专注练习错题
+        </div>
+        
+        <!-- 游戏区域 -->
+        <div id="gameArea">
+            <div class="card-container">
+                <div class="card" id="questionCard">
+                    <div class="card-header">
+                        <span class="unit-tag" id="unitTag">第一单元</span>
+                        <span class="question-type" id="questionType">考古发现</span>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-text" id="questionText">加载中...</div>
+                        <div class="options" id="optionsContainer"></div>
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                    <div class="btn-container">
+                        <button class="btn btn-submit" id="submitBtn" disabled>提交答案</button>
+                        <button class="btn btn-next" id="nextBtn">下一题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 空状态 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h2>🎉 恭喜完成！</h2>
+            <p>你已经掌握了所有核心知识点！</p>
+            <button class="reset-btn" onclick="resetProgress()">重新开始</button>
+        </div>
+        
+        <!-- 错题本空状态 -->
+        <div class="empty-state" id="wrongBookEmpty" style="display: none;">
+            <h2>📒 错题本为空</h2>
+            <p>你还没有错题记录，继续加油！</p>
+            <button class="reset-btn" onclick="toggleWrongBookMode()">返回学习模式</button>
+        </div>
+    </div>
+    
+    <!-- 用户名输入弹窗 -->
+    <div class="modal-overlay" id="usernameModal">
+        <div class="modal-content">
+            <div class="modal-title">👋 欢迎来到伏羲历史闯关！</div>
+            <p style="color: #666; margin-bottom: 15px; text-align: center;">请输入你的昵称参与排行榜</p>
+            <input type="text" class="username-input" id="usernameInput" placeholder="请输入你的昵称（2-10个字符）" maxlength="10" onkeypress="if(event.key==='Enter')userManager.saveUsername()">
+            <button class="modal-btn modal-btn-primary" onclick="userManager.saveUsername()">开始学习</button>
+        </div>
+    </div>
+    
+    <!-- 排行榜弹窗 -->
+    <div class="modal-overlay" id="leaderboardModal">
+        <div class="modal-content" style="position: relative;">
+            <button class="modal-close" onclick="leaderboard.close()">&times;</button>
+            <div class="modal-title" style="margin-bottom: 20px;">🏆 积分排行榜</div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- 排行榜列表将通过 JavaScript 动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- JS模块文件 -->
+    <script src="../data/人教_初一_历史_上册_题目.js"></script>
+    <script src="../js/storage-manager.js"></script>
+    <script src="../js/firebase-manager.js"></script>
+    <script src="../js/effect-system.js"></script>
+    <script src="../js/leaderboard.js"></script>
+    <script src="../js/adaptive-algorithm.js"></script>
+    <script src="../js/wrong-book.js"></script>
+    <script src="../js/score-system.js"></script>
+    <script src="../js/user-manager.js"></script>
+    <script src="../js/stats-manager.js"></script>
+    
+    <!-- 主应用逻辑 -->
+    <script>
+        // 全局变量
+        let currentQuestion = null;
+        let currentOptions = [];
+        let selectedOption = null;
+        let isWrongBookMode = false;
+        
+        // 初始化所有管理器
+        const storageManager = new StorageManager();
+        const firebaseManager = new FirebaseManager({
+            apiKey: "AIzaSyCh9Ar8TuQmZWtuOCTF6VzJNs_m0qbiHFk",
+            authDomain: "fuxi-chu2-yuwen-up.firebaseapp.com",
+            projectId: "fuxi-chu2-yuwen-up",
+            storageBucket: "fuxi-chu2-yuwen-up.firebasestorage.app",
+            messagingSenderId: "489932483223",
+            appId: "1:489932483223:web:d3233921d00bdbb23b17d2",
+            measurementId: "G-BPYRERB02C",
+            databaseURL: "https://fuxi-chu2-yuwen-up-default-rtdb.asia-southeast1.firebasedatabase.app"
+        });
+        firebaseManager.init();
+        
+        const effectSystem = new EffectSystem();
+        const leaderboard = new Leaderboard(firebaseManager, storageManager, 'history_leaderboard_users');
+        const adaptiveAlgorithm = new AdaptiveAlgorithm(storageManager, 'historyQuizProgress');
+        const wrongBook = new WrongBook(storageManager, 'historyWrongBook');
+        const scoreSystem = new ScoreSystem(storageManager, 'historyScore');
+        const userManager = new UserManager(storageManager, 'username');
+        const statsManager = new StatsManager(storageManager, 'historyStats');
+        
+        // DOM元素
+        const elements = {
+            gameArea: document.getElementById('gameArea'),
+            emptyState: document.getElementById('emptyState'),
+            wrongBookEmpty: document.getElementById('wrongBookEmpty'),
+            questionCard: document.getElementById('questionCard'),
+            unitTag: document.getElementById('unitTag'),
+            questionType: document.getElementById('questionType'),
+            questionText: document.getElementById('questionText'),
+            optionsContainer: document.getElementById('optionsContainer'),
+            feedback: document.getElementById('feedback'),
+            submitBtn: document.getElementById('submitBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            progressFill: document.getElementById('progressFill'),
+            masteredCount: document.getElementById('masteredCount'),
+            learningCount: document.getElementById('learningCount'),
+            accuracyRate: document.getElementById('accuracyRate'),
+            totalScore: document.getElementById('totalScore'),
+            streakIndicator: document.getElementById('streakIndicator'),
+            streakCount: document.getElementById('streakCount'),
+            wrongBookBtn: document.getElementById('wrongBookBtn'),
+            wrongCount: document.getElementById('wrongCount'),
+            modeIndicator: document.getElementById('modeIndicator'),
+            usernameModal: document.getElementById('usernameModal'),
+            leaderboardModal: document.getElementById('leaderboardModal'),
+            leaderboardList: document.getElementById('leaderboardList'),
+            usernameInput: document.getElementById('usernameInput')
+        };
+        
+        /**
+         * Fisher-Yates 洗牌算法
+         * 用于随机化选项顺序
+         */
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        /**
+         * 获取下一道题目
+         */
+        function getNextQuestion() {
+            if (isWrongBookMode) {
+                // 错题本模式：从错题本中获取题目
+                const wrongList = wrongBook.getWrongList();
+                if (wrongList.length === 0) {
+                    showWrongBookEmpty();
+                    return null;
+                }
+                
+                // 优先选择错误次数多的题目
+                const sortedList = wrongBook.sortByWrongCount();
+                const wrongItem = sortedList[0];
+                const question = historyKnowledgePoints.find(q => q.id === wrongItem.questionId);
+                return question;
+            } else {
+                // 正常模式：使用自适应算法
+                return adaptiveAlgorithm.selectQuestion(historyKnowledgePoints);
+            }
+        }
+        
+        /**
+         * 显示题目
+         */
+        function displayQuestion(question) {
+            if (!question) return;
+            
+            currentQuestion = question;
+            
+            // 更新UI
+            elements.unitTag.textContent = question.unit;
+            elements.questionType.textContent = question.type;
+            elements.questionText.textContent = question.question;
+            
+            // 随机化选项
+            const optionIndices = [0, 1, 2, 3];
+            const shuffledIndices = shuffleArray(optionIndices);
+            currentOptions = shuffledIndices.map((originalIndex, displayIndex) => ({
+                originalIndex,
+                displayIndex,
+                text: question.options[originalIndex]
+            }));
+            
+            // 渲染选项
+            elements.optionsContainer.innerHTML = '';
+            currentOptions.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = `${String.fromCharCode(65 + index)}. ${option.text}`;
+                optionElement.onclick = () => selectOption(index, optionElement);
+                elements.optionsContainer.appendChild(optionElement);
+            });
+            
+            // 重置状态
+            selectedOption = null;
+            elements.submitBtn.disabled = true;
+            elements.submitBtn.style.display = 'block';
+            elements.nextBtn.style.display = 'none';
+            elements.feedback.style.display = 'none';
+            elements.feedback.className = 'feedback';
+        }
+        
+        /**
+         * 选择选项
+         */
+        function selectOption(index, element) {
+            if (selectedOption !== null) return;
+            
+            selectedOption = index;
+            elements.submitBtn.disabled = false;
+            
+            // 更新选项样式
+            const options = elements.optionsContainer.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                if (i === index) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+        
+        /**
+         * 提交答案
+         */
+        function submitAnswer() {
+            if (selectedOption === null || !currentQuestion) return;
+            
+            const selected = currentOptions[selectedOption];
+            const isCorrect = selected.originalIndex === currentQuestion.answer;
+            
+            // 更新选项样式显示正确/错误
+            const options = elements.optionsContainer.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                const optOriginalIndex = currentOptions[i].originalIndex;
+                if (optOriginalIndex === currentQuestion.answer) {
+                    opt.classList.add('correct');
+                } else if (i === selectedOption && !isCorrect) {
+                    opt.classList.add('wrong');
+                }
+                opt.onclick = null; // 禁用点击
+            });
+            
+            // 显示反馈
+            elements.feedback.style.display = 'block';
+            elements.feedback.className = isCorrect ? 'feedback correct' : 'feedback wrong';
+            elements.feedback.innerHTML = isCorrect 
+                ? '✅ 回答正确！<br>' + currentQuestion.explanation
+                : '❌ 回答错误！<br>' + currentQuestion.explanation;
+            
+            // 更新学习进度
+            adaptiveAlgorithm.updateProgress(currentQuestion.id, isCorrect);
+            
+            // 更新统计
+            statsManager.recordAnswer(isCorrect);
+            
+            // 更新错题本
+            if (isCorrect) {
+                wrongBook.removeWrong(currentQuestion.id);
+            } else {
+                wrongBook.addWrong(currentQuestion.id);
+            }
+            
+            // 更新积分
+            const score = scoreSystem.calculateScore(isCorrect, adaptiveAlgorithm.getConsecutiveCorrect(currentQuestion.id));
+            scoreSystem.addScore(score);
+            
+            // 更新排行榜
+            const username = userManager.getUsername();
+            const totalScore = scoreSystem.getScore();
+            if (username) {
+                leaderboard.updateUserScore(username, totalScore);
+            }
+            
+            // 显示特效
+            if (isCorrect) {
+                const consecutiveCorrect = adaptiveAlgorithm.getConsecutiveCorrect(currentQuestion.id);
+                effectSystem.showEffect(consecutiveCorrect, score);
+                updateStreakIndicator(consecutiveCorrect);
+            } else {
+                effectSystem.showErrorEffect();
+                updateStreakIndicator(0);
+            }
+            
+            // 更新UI
+            updateStats();
+            
+            // 切换按钮
+            elements.submitBtn.style.display = 'none';
+            elements.nextBtn.style.display = 'block';
+        }
+        
+        /**
+         * 下一题
+         */
+        function nextQuestion() {
+            const nextQ = getNextQuestion();
+            if (nextQ) {
+                displayQuestion(nextQ);
+            } else {
+                showEmptyState();
+            }
+        }
+        
+        /**
+         * 更新统计显示
+         */
+        function updateStats() {
+            const progress = adaptiveAlgorithm.getProgress(historyKnowledgePoints.length);
+            const stats = statsManager.getStats();
+            const score = scoreSystem.getScore();
+            const wrongCount = wrongBook.getCount();
+
+            elements.masteredCount.textContent = progress.mastered;
+            elements.learningCount.textContent = progress.learning;
+            elements.accuracyRate.textContent = stats.accuracyRate + '%';
+            elements.totalScore.textContent = score;
+            elements.progressFill.style.width = (progress.mastered / historyKnowledgePoints.length * 100) + '%';
+            elements.wrongCount.textContent = wrongCount;
+        }
+        
+        /**
+         * 更新连对指示器
+         */
+        function updateStreakIndicator(count) {
+            if (count >= 3) {
+                elements.streakCount.textContent = count;
+                elements.streakIndicator.classList.add('show');
+            } else {
+                elements.streakIndicator.classList.remove('show');
+            }
+        }
+        
+        /**
+         * 切换错题本模式
+         */
+        function toggleWrongBookMode() {
+            isWrongBookMode = !isWrongBookMode;
+            
+            if (isWrongBookMode) {
+                elements.wrongBookBtn.classList.add('active');
+                elements.modeIndicator.style.display = 'block';
+            } else {
+                elements.wrongBookBtn.classList.remove('active');
+                elements.modeIndicator.style.display = 'none';
+            }
+            
+            // 重新加载题目
+            const nextQ = getNextQuestion();
+            if (nextQ) {
+                elements.gameArea.style.display = 'block';
+                elements.emptyState.style.display = 'none';
+                elements.wrongBookEmpty.style.display = 'none';
+                displayQuestion(nextQ);
+            } else if (isWrongBookMode) {
+                showWrongBookEmpty();
+            } else {
+                showEmptyState();
+            }
+        }
+        
+        /**
+         * 显示空状态
+         */
+        function showEmptyState() {
+            elements.gameArea.style.display = 'none';
+            elements.emptyState.style.display = 'block';
+            elements.wrongBookEmpty.style.display = 'none';
+        }
+        
+        /**
+         * 显示错题本空状态
+         */
+        function showWrongBookEmpty() {
+            elements.gameArea.style.display = 'none';
+            elements.emptyState.style.display = 'none';
+            elements.wrongBookEmpty.style.display = 'block';
+        }
+        
+        /**
+         * 重置进度
+         */
+        function resetProgress() {
+            if (confirm('确定要重置所有学习进度吗？此操作不可恢复。')) {
+                adaptiveAlgorithm.reset();
+                statsManager.reset();
+                wrongBook.clear();
+                scoreSystem.reset();
+                
+                elements.gameArea.style.display = 'block';
+                elements.emptyState.style.display = 'none';
+                
+                const nextQ = getNextQuestion();
+                if (nextQ) {
+                    displayQuestion(nextQ);
+                }
+                updateStats();
+            }
+        }
+        
+        /**
+         * 初始化应用
+         */
+        function initApp() {
+            // 绑定按钮事件
+            elements.submitBtn.onclick = submitAnswer;
+            elements.nextBtn.onclick = nextQuestion;
+            
+            // 检查用户名
+            userManager.checkUsername();
+            
+            // 更新统计
+            updateStats();
+            
+            // 加载第一道题目
+            const firstQuestion = getNextQuestion();
+            if (firstQuestion) {
+                displayQuestion(firstQuestion);
+            } else {
+                showEmptyState();
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = initApp;
+    </script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+/**
+ * 语文古风文人风主题样式
+ * 包含水墨、书法、竹简等古风元素
+ */
+
+body {
+    /* 水墨纹理背景 */
+    background: 
+        linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%),
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><defs><pattern id="ink-wash" patternUnits="userSpaceOnUse" width="100" height="100"><rect width="100" height="100" fill="%23f5f5f0"/><circle cx="50" cy="50" r="40" fill="rgba(0,0,0,0.02)"/></pattern></defs><rect width="100" height="100" fill="url(%23ink-wash)"/></svg>');
+    background-attachment: fixed;
+}
+
+/* 水墨晕染效果 */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(192, 72, 81, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(62, 65, 73, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Header样式 */
+.header {
+    text-align: center;
+    color: #f5f5f0;
+    padding: 15px 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.header h1 {
+    font-size: 1.4rem;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    font-family: 'Courier New', 'KaiTi', 'STKaiti', serif;
+}
+
+/* 返回按钮 - 印章风格 */
+.back-btn {
+    background: rgba(192, 72, 81, 0.6);
+    color: #d4af37;
+    border: 2px solid #d4af37;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 10px;
+    font-family: 'Courier New', 'KaiTi', serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.back-btn:hover {
+    background: rgba(192, 72, 81, 0.8);
+    transform: translateX(-3px);
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
+}
+
+/* 进度条 - 毛笔笔触效果 */
+.progress-bar {
+    background: rgba(245, 245, 240, 0.3);
+    border-radius: 20px;
+    height: 20px;
+    overflow: hidden;
+    margin: 10px 0;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #c04851, #d4af37, #8b4513);
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* 统计面板 */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    color: #f5f5f0;
+    font-size: 0.85rem;
+    padding: 10px;
+    background: rgba(245, 245, 240, 0.15);
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #d4af37;
+    font-family: 'Courier New', 'KaiTi', serif;
+}
+
+/* 卡片 - 宣纸效果 */
+.card {
+    background: linear-gradient(135deg, rgba(245, 245, 240, 0.95), rgba(255, 255, 255, 0.9));
+    border-radius: 15px;
+    padding: 20px 15px;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(192, 72, 81, 0.3);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+/* 卡片毛边效果 */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    background-image: 
+        linear-gradient(45deg, transparent 5px, rgba(192, 72, 81, 0.05) 5px, transparent 5px),
+        linear-gradient(-45deg, transparent 5px, rgba(192, 72, 81, 0.05) 5px, transparent 5px);
+    background-size: 10px 10px;
+    background-position: 0 0, 0 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 竹简边框装饰 */
+.card::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    border: 2px solid transparent;
+    border-image: linear-gradient(135deg, #d4af37, #c04851, #3e4149) 1;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 单元标签 - 印章风格 */
+.unit-tag {
+    background: linear-gradient(135deg, #c04851, #8b4513);
+    color: #f5f5f0;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    font-family: 'Courier New', 'KaiTi', serif;
+    border: 1px solid #d4af37;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 题型标签 */
+.question-type {
+    background: rgba(245, 245, 240, 0.8);
+    color: #3e4149;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    border: 1px solid rgba(192, 72, 81, 0.3);
+    font-family: 'Courier New', 'KaiTi', serif;
+}
+
+/* 题目文本 */
+.question-text {
+    font-size: 1.1rem;
+    color: #1a1a1a;
+    line-height: 1.8;
+    margin-bottom: 15px;
+    font-family: 'Courier New', 'KaiTi', 'STKaiti', serif;
+    position: relative;
+    z-index: 2;
+}
+
+/* 选项样式 */
+.option {
+    padding: 12px 15px;
+    border: 2px solid rgba(192, 72, 81, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.8);
+    position: relative;
+    z-index: 2;
+}
+
+.option:hover {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.1);
+    transform: translateX(5px);
+}
+
+.option.selected {
+    border-color: #d4af37;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(192, 72, 81, 0.1));
+    color: #1a1a1a;
+    font-weight: bold;
+}
+
+.option.correct {
+    border-color: #4CAF50;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(69, 160, 73, 0.1));
+    color: #1a1a1a;
+    font-weight: bold;
+}
+
+.option.wrong {
+    border-color: #f44336;
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.2), rgba(211, 47, 47, 0.1));
+    color: #1a1a1a;
+}
+
+/* 按钮样式 - 印章风格 */
+.btn-submit {
+    background: linear-gradient(135deg, #c04851, #8b4513);
+    color: #f5f5f0;
+    border: 2px solid #d4af37;
+    font-family: 'Courier New', 'KaiTi', serif;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+}
+
+.btn-next {
+    background: linear-gradient(135deg, #3e4149, #2c3e50);
+    color: #f5f5f0;
+    border: 2px solid #d4af37;
+    font-family: 'Courier New', 'KaiTi', serif;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 反馈区域 */
+.feedback.correct {
+    background: rgba(76, 175, 80, 0.15);
+    color: #1a1a1a;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.feedback.wrong {
+    background: rgba(244, 67, 54, 0.15);
+    color: #1a1a1a;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* 排行榜按钮 - 古风 */
+.leaderboard-btn {
+    background: linear-gradient(135deg, #d4af37, #c04851);
+    color: #f5f5f0;
+    border: 2px solid #8b4513;
+    font-family: 'Courier New', 'KaiTi', serif;
+    box-shadow: 0 3px 10px rgba(212, 175, 55, 0.4);
+}
+
+.leaderboard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.6);
+}
+
+/* 错题本按钮 */
+.wrong-book-btn {
+    background: linear-gradient(135deg, #8b4513, #c04851);
+    color: #f5f5f0;
+    border: 2px solid #d4af37;
+    font-family: 'Courier New', 'KaiTi', serif;
+    box-shadow: 0 3px 10px rgba(139, 69, 19, 0.4);
+}
+
+.wrong-book-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 69, 19, 0.6);
+}
+
+.wrong-book-btn.active {
+    background: linear-gradient(135deg, #d4af37, #c04851);
+    color: #1a1a2e;
+    border-color: #f5f5f0;
+}
+
+/* 连对指示器 */
+.streak-indicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(26, 26, 26, 0.95);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #d4af37;
+    border: 1px solid #c04851;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: none;
+    font-family: 'Courier New', 'KaiTi', serif;
+}
+
+.streak-indicator.show {
+    display: block;
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* 错题模式指示器 */
+.mode-indicator {
+    text-align: center;
+    color: #f5f5f0;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(192, 72, 81, 0.3);
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    font-family: 'Courier New', 'KaiTi', serif;
+}
+
+/* 响应式调整 */
+@media (max-width: 380px) {
+    .header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .card {
+        padding: 15px 12px;
+        min-height: 260px;
+    }
+    
+    .question-text {
+        font-size: 1rem;
+    }
+    
+    .option {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+}

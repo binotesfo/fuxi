@@ -1,0 +1,281 @@
+/**
+ * 特效样式
+ * 包含粒子、动画、闪光等特效的CSS样式
+ */
+
+/* 特效容器 */
+.effect-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 55vh;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+
+/* 中央文字效果 */
+.effect-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    opacity: 0;
+    z-index: 100;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 215, 0, 0.6);
+}
+
+.effect-text.level-1 {
+    color: #4CAF50;
+}
+
+.effect-text.level-2 {
+    color: #FFD700;
+}
+
+.effect-text.level-3 {
+    color: #FF6B6B;
+}
+
+.effect-text.level-4 {
+    color: #FF1493;
+}
+
+.effect-text.level-5 {
+    color: #00FFFF;
+    text-shadow: 0 0 30px #00FFFF, 0 0 60px #FFD700, 0 0 90px #FF1493;
+}
+
+.effect-text.show {
+    animation: textBurst 1.5s ease-out forwards;
+}
+
+@keyframes textBurst {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
+    20% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    40% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8) translateY(-30px);
+    }
+}
+
+/* 粒子效果 */
+.particle {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+}
+
+.particle.star {
+    width: 10px;
+    height: 10px;
+    background: radial-gradient(circle, #FFD700, #FFA500);
+    box-shadow: 0 0 6px #FFD700;
+}
+
+.particle.heart {
+    width: 15px;
+    height: 15px;
+    background: none;
+}
+
+.particle.heart::before,
+.particle.heart::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 24px;
+    background: #FF6B6B;
+    border-radius: 15px 15px 0 0;
+}
+
+.particle.heart::before {
+    left: 0;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+}
+
+.particle.heart::after {
+    left: 15px;
+    transform: rotate(45deg);
+    transform-origin: 100% 100%;
+}
+
+.particle.confetti {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.particle.diamond {
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(135deg, #00FFFF, #FFFFFF, #00FFFF);
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px #00FFFF;
+}
+
+.particle.comet {
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #FF1493, #FFFFFF);
+    box-shadow: 0 0 8px #FF1493;
+}
+
+/* 烟花效果 */
+.firework {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    animation: fireworkBurst 1s ease-out forwards;
+}
+
+@keyframes fireworkBurst {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0);
+    }
+}
+
+/* 闪光效果 */
+.flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9998;
+}
+
+.flash.show {
+    animation: flashBurst 0.3s ease-out;
+}
+
+@keyframes flashBurst {
+    0% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* 下落的金币/星星 */
+.falling-item {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: fallDown 2s ease-in forwards;
+}
+
+@keyframes fallDown {
+    0% {
+        transform: translateY(-50px) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(60vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* 震动效果 */
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+/* 连击数字飘动 */
+.combo-number {
+    position: absolute;
+    font-size: 4rem;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 0 0 20px #FF6B00, 2px 2px 0 #FF4500;
+    animation: comboFloat 1.5s ease-out forwards;
+}
+
+@keyframes comboFloat {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    30% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.3);
+    }
+    50% {
+        transform: translate(-50%, -60%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -100%) scale(0.8);
+    }
+}
+
+/* 积分增加动画 */
+.score-float {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    font-weight: bold;
+    color: #FFD700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    animation: scoreFloatUp 1.5s ease-out forwards;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@keyframes scoreFloatUp {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    30% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.3);
+    }
+    50% {
+        transform: translate(-50%, -60%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -100%) scale(0.8);
+    }
+}
