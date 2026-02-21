@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>人教版初一语文核心知识点闯关 - 伏羲</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <!-- CSS样式文件 -->
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="../css/effects.css">
+    <link rel="stylesheet" href="../css/leaderboard.css">
+    <link rel="stylesheet" href="../css/theme-yuwen.css">
+</head>
+<body>
+    <!-- 特效容器 -->
+    <div class="effect-container" id="effectContainer"></div>
+    <div class="flash" id="flashOverlay"></div>
+    
+    <!-- 连对指示器 -->
+    <div class="streak-indicator" id="streakIndicator">🔥 连对 <span id="streakCount">0</span> 次</div>
+    
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-btn">⬅️ 返回</a>
+            <h1>📚 伏羲语文闯关</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="masteredCount">0</div>
+                    <div>已掌握</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="learningCount">300</div>
+                    <div>学习中</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="accuracyRate">0%</div>
+                    <div>正确率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalScore">0</div>
+                    <div>积分</div>
+                </div>
+            </div>
+            
+            <!-- 功能按钮组 -->
+            <div class="button-group">
+                <button class="leaderboard-btn" onclick="leaderboard.show()">
+                    🏆 排行榜
+                </button>
+                <button class="wrong-book-btn" id="wrongBookBtn" onclick="toggleWrongBookMode()">
+                    📒 错题本 <span class="wrong-count" id="wrongCount">0</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 错题模式指示器 -->
+        <div class="mode-indicator" id="modeIndicator" style="display: none;">
+            📒 错题本模式 - 专注练习错题
+        </div>
+        
+        <!-- 游戏区域 -->
+        <div id="gameArea">
+            <div class="card-container">
+                <div class="card" id="questionCard">
+                    <div class="card-header">
+                        <span class="unit-tag" id="unitTag">第一单元</span>
+                        <span class="question-type" id="questionType">文学常识</span>
+                    </div>
+                    <div class="question-content">
+                        <div class="question-text" id="questionText">加载中...</div>
+                        <div class="options" id="optionsContainer"></div>
+                    </div>
+                    <div class="feedback" id="feedback"></div>
+                    <div class="btn-container">
+                        <button class="btn btn-submit" id="submitBtn" disabled>提交答案</button>
+                        <button class="btn btn-next" id="nextBtn">下一题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 空状态 -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <h2>🎉 恭喜完成！</h2>
+            <p>你已经掌握了所有核心知识点！</p>
+            <button class="reset-btn" onclick="resetProgress()">重新开始</button>
+        </div>
+        
+        <!-- 错题本空状态 -->
+        <div class="empty-state" id="wrongBookEmpty" style="display: none;">
+            <h2>📒 错题本为空</h2>
+            <p>你还没有错题记录，继续加油！</p>
+            <button class="reset-btn" onclick="toggleWrongBookMode()">返回学习模式</button>
+        </div>
+    </div>
+    
+    <!-- 用户名输入弹窗 -->
+    <div class="modal-overlay" id="usernameModal">
+        <div class="modal-content">
+            <div class="modal-title">👋 欢迎来到伏羲语文闯关！</div>
+            <p style="color: #666; margin-bottom: 15px; text-align: center;">请输入你的昵称参与排行榜</p>
+            <input type="text" class="username-input" id="usernameInput" placeholder="请输入你的昵称（2-10个字符）" maxlength="10" onkeypress="if(event.key==='Enter')userManager.saveUsername()">
+            <button class="modal-btn modal-btn-primary" onclick="userManager.saveUsername()">开始学习</button>
+        </div>
+    </div>
+    
+    <!-- 排行榜弹窗 -->
+    <div class="modal-overlay" id="leaderboardModal">
+        <div class="modal-content" style="position: relative;">
+            <button class="modal-close" onclick="leaderboard.close()">&times;</button>
+            <div class="modal-title" style="margin-bottom: 20px;">🏆 积分排行榜</div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- 排行榜列表将通过 JavaScript 动态生成 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- JS模块文件 -->
+    <script src="../data/人教_部编_初一_语文_上册_题目.js"></script>
+    <script src="../js/storage-manager.js"></script>
+    <script src="../js/firebase-manager.js"></script>
+    <script src="../js/effect-system.js"></script>
+    <script src="../js/leaderboard.js"></script>
+    <script src="../js/adaptive-algorithm.js"></script>
+    <script src="../js/wrong-book.js"></script>
+    <script src="../js/score-system.js"></script>
+    <script src="../js/user-manager.js"></script>
+    <script src="../js/stats-manager.js"></script>
+    
+    <!-- 主应用逻辑 -->
+    <script>
+        // 全局变量
+        let currentQuestion = null;
+        let currentOptions = [];
+        let selectedOption = null;
+        let isWrongBookMode = false;
+        
+        // 初始化所有管理器
+        const storageManager = new StorageManager();
+        const firebaseManager = new FirebaseManager({
+            apiKey: "AIzaSyCh9Ar8TuQmZWtuOCTF6VzJNs_m0qbiHFk",
+            authDomain: "fuxi-chu2-yuwen-up.firebaseapp.com",
+            projectId: "fuxi-chu2-yuwen-up",
+            storageBucket: "fuxi-chu2-yuwen-up.firebasestorage.app",
+            messagingSenderId: "489932483223",
+            appId: "1:489932483223:web:d3233921d00bdbb23b17d2",
+            measurementId: "G-BPYRERB02C",
+            databaseURL: "https://fuxi-chu2-yuwen-up-default-rtdb.asia-southeast1.firebasedatabase.app"
+        });
+        firebaseManager.init();
+        
+        const effectSystem = new EffectSystem();
+        const leaderboard = new Leaderboard(firebaseManager, storageManager, 'leaderboard_users');
+        const adaptiveAlgorithm = new AdaptiveAlgorithm(storageManager, 'chineseQuizProgress');
+        const wrongBook = new WrongBook(storageManager, 'chineseWrongBook');
+        const scoreSystem = new ScoreSystem(storageManager, 'chineseScore');
+        const userManager = new UserManager(storageManager, 'username');
+        const statsManager = new StatsManager(storageManager, 'chineseStats');
+        
+        // DOM元素
+        const elements = {
+            gameArea: document.getElementById('gameArea'),
+            emptyState: document.getElementById('emptyState'),
+            wrongBookEmpty: document.getElementById('wrongBookEmpty'),
+            questionCard: document.getElementById('questionCard'),
+            unitTag: document.getElementById('unitTag'),
+            questionType: document.getElementById('questionType'),
+            questionText: document.getElementById('questionText'),
+            optionsContainer: document.getElementById('optionsContainer'),
+            feedback: document.getElementById('feedback'),
+            submitBtn: document.getElementById('submitBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            progressFill: document.getElementById('progressFill'),
+            masteredCount: document.getElementById('masteredCount'),
+            learningCount: document.getElementById('learningCount'),
+            accuracyRate: document.getElementById('accuracyRate'),
+            totalScore: document.getElementById('totalScore'),
+            streakIndicator: document.getElementById('streakIndicator'),
+            streakCount: document.getElementById('streakCount'),
+            wrongBookBtn: document.getElementById('wrongBookBtn'),
+            wrongCount: document.getElementById('wrongCount'),
+            modeIndicator: document.getElementById('modeIndicator'),
+            usernameModal: document.getElementById('usernameModal'),
+            leaderboardModal: document.getElementById('leaderboardModal'),
+            leaderboardList: document.getElementById('leaderboardList'),
+            usernameInput: document.getElementById('usernameInput')
+        };
+        
+        /**
+         * Fisher-Yates 洗牌算法
+         * 用于随机化选项顺序
+         */
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        /**
+         * 获取下一道题目
+         */
+        function getNextQuestion() {
+            if (isWrongBookMode) {
+                // 错题本模式：从错题本中获取题目
+                const wrongList = wrongBook.getWrongList();
+                if (wrongList.length === 0) {
+                    showWrongBookEmpty();
+                    return null;
+                }
+                
+                // 优先选择错误次数多的题目
+                const sortedList = wrongBook.sortByWrongCount();
+                const wrongItem = sortedList[0];
+                const question = knowledgePoints.find(q => q.id === wrongItem.questionId);
+                return question;
+            } else {
+                // 正常模式：使用自适应算法
+                return adaptiveAlgorithm.selectQuestion(knowledgePoints);
+            }
+        }
+        
+        /**
+         * 显示题目
+         */
+        function displayQuestion(question) {
+            if (!question) return;
+            
+            currentQuestion = question;
+            
+            // 更新UI
+            elements.unitTag.textContent = question.unit;
+            elements.questionType.textContent = question.type;
+            elements.questionText.textContent = question.question;
+            
+            // 随机化选项
+            const optionIndices = [0, 1, 2, 3];
+            const shuffledIndices = shuffleArray(optionIndices);
+            currentOptions = shuffledIndices.map((originalIndex, displayIndex) => ({
+                originalIndex,
+                displayIndex,
+                text: question.options[originalIndex]
+            }));
+            
+            // 渲染选项
+            elements.optionsContainer.innerHTML = '';
+            currentOptions.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.textContent = `${String.fromCharCode(65 + index)}. ${option.text}`;
+                optionElement.onclick = () => selectOption(index, optionElement);
+                elements.optionsContainer.appendChild(optionElement);
+            });
+            
+            // 重置状态
+            selectedOption = null;
+            elements.submitBtn.disabled = true;
+            elements.submitBtn.style.display = 'block';
+            elements.nextBtn.style.display = 'none';
+            elements.feedback.style.display = 'none';
+            elements.feedback.className = 'feedback';
+        }
+        
+        /**
+         * 选择选项
+         */
+        function selectOption(index, element) {
+            if (selectedOption !== null) return;
+            
+            selectedOption = index;
+            elements.submitBtn.disabled = false;
+            
+            // 更新选项样式
+            const options = elements.optionsContainer.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                if (i === index) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+        
+        /**
+         * 提交答案
+         */
+        function submitAnswer() {
+            if (selectedOption === null || !currentQuestion) return;
+            
+            const selected = currentOptions[selectedOption];
+            const isCorrect = selected.originalIndex === currentQuestion.answer;
+            
+            // 更新选项样式显示正确/错误
+            const options = elements.optionsContainer.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                const optOriginalIndex = currentOptions[i].originalIndex;
+                if (optOriginalIndex === currentQuestion.answer) {
+                    opt.classList.add('correct');
+                } else if (i === selectedOption && !isCorrect) {
+                    opt.classList.add('wrong');
+                }
+                opt.onclick = null; // 禁用点击
+            });
+            
+            // 显示反馈
+            elements.feedback.style.display = 'block';
+            elements.feedback.className = isCorrect ? 'feedback correct' : 'feedback wrong';
+            elements.feedback.innerHTML = isCorrect 
+                ? '✅ 回答正确！<br>' + currentQuestion.explanation
+                : '❌ 回答错误！<br>' + currentQuestion.explanation;
+            
+            // 更新学习进度
+            adaptiveAlgorithm.updateProgress(currentQuestion.id, isCorrect);
+            
+            // 更新统计
+            statsManager.recordAnswer(isCorrect);
+            
+            // 更新错题本
+            if (isCorrect) {
+                wrongBook.removeWrong(currentQuestion.id);
+            } else {
+                wrongBook.addWrong(currentQuestion.id);
+            }
+            
+            // 更新积分
+            const score = scoreSystem.calculateScore(isCorrect, adaptiveAlgorithm.getConsecutiveCorrect(currentQuestion.id));
+            scoreSystem.addScore(score);
+            
+            // 更新排行榜
+            const username = userManager.getUsername();
+            const totalScore = scoreSystem.getScore();
+            if (username) {
+                leaderboard.updateUserScore(username, totalScore);
+            }
+            
+            // 显示特效
+            if (isCorrect) {
+                const consecutiveCorrect = adaptiveAlgorithm.getConsecutiveCorrect(currentQuestion.id);
+                effectSystem.showEffect(consecutiveCorrect, score);
+                updateStreakIndicator(consecutiveCorrect);
+            } else {
+                effectSystem.showErrorEffect();
+                updateStreakIndicator(0);
+            }
+            
+            // 更新UI
+            updateStats();
+            
+            // 切换按钮
+            elements.submitBtn.style.display = 'none';
+            elements.nextBtn.style.display = 'block';
+        }
+        
+        /**
+         * 下一题
+         */
+        function nextQuestion() {
+            const nextQ = getNextQuestion();
+            if (nextQ) {
+                displayQuestion(nextQ);
+            } else {
+                showEmptyState();
+            }
+        }
+        
+        /**
+         * 更新统计显示
+         */
+        function updateStats() {
+            const progress = adaptiveAlgorithm.getProgress(knowledgePoints.length);
+            const stats = statsManager.getStats();
+            const score = scoreSystem.getScore();
+            const wrongCount = wrongBook.getCount();
+
+            elements.masteredCount.textContent = progress.mastered;
+            elements.learningCount.textContent = progress.learning;
+            elements.accuracyRate.textContent = stats.accuracyRate + '%';
+            elements.totalScore.textContent = score;
+            elements.progressFill.style.width = (progress.mastered / knowledgePoints.length * 100) + '%';
+            elements.wrongCount.textContent = wrongCount;
+        }
+        
+        /**
+         * 更新连对指示器
+         */
+        function updateStreakIndicator(count) {
+            if (count >= 3) {
+                elements.streakCount.textContent = count;
+                elements.streakIndicator.classList.add('show');
+            } else {
+                elements.streakIndicator.classList.remove('show');
+            }
+        }
+        
+        /**
+         * 切换错题本模式
+         */
+        function toggleWrongBookMode() {
+            isWrongBookMode = !isWrongBookMode;
+            
+            if (isWrongBookMode) {
+                elements.wrongBookBtn.classList.add('active');
+                elements.modeIndicator.style.display = 'block';
+            } else {
+                elements.wrongBookBtn.classList.remove('active');
+                elements.modeIndicator.style.display = 'none';
+            }
+            
+            // 重新加载题目
+            const nextQ = getNextQuestion();
+            if (nextQ) {
+                elements.gameArea.style.display = 'block';
+                elements.emptyState.style.display = 'none';
+                elements.wrongBookEmpty.style.display = 'none';
+                displayQuestion(nextQ);
+            } else if (isWrongBookMode) {
+                showWrongBookEmpty();
+            } else {
+                showEmptyState();
+            }
+        }
+        
+        /**
+         * 显示空状态
+         */
+        function showEmptyState() {
+            elements.gameArea.style.display = 'none';
+            elements.emptyState.style.display = 'block';
+            elements.wrongBookEmpty.style.display = 'none';
+        }
+        
+        /**
+         * 显示错题本空状态
+         */
+        function showWrongBookEmpty() {
+            elements.gameArea.style.display = 'none';
+            elements.emptyState.style.display = 'none';
+            elements.wrongBookEmpty.style.display = 'block';
+        }
+        
+        /**
+         * 重置进度
+         */
+        function resetProgress() {
+            if (confirm('确定要重置所有学习进度吗？此操作不可恢复。')) {
+                adaptiveAlgorithm.reset();
+                statsManager.reset();
+                wrongBook.clear();
+                scoreSystem.reset();
+                
+                elements.gameArea.style.display = 'block';
+                elements.emptyState.style.display = 'none';
+                
+                const nextQ = getNextQuestion();
+                if (nextQ) {
+                    displayQuestion(nextQ);
+                }
+                updateStats();
+            }
+        }
+        
+        /**
+         * 初始化应用
+         */
+        function initApp() {
+            // 绑定按钮事件
+            elements.submitBtn.onclick = submitAnswer;
+            elements.nextBtn.onclick = nextQuestion;
+            
+            // 检查用户名
+            userManager.checkUsername();
+            
+            // 更新统计
+            updateStats();
+            
+            // 加载第一道题目
+            const firstQuestion = getNextQuestion();
+            if (firstQuestion) {
+                displayQuestion(firstQuestion);
+            } else {
+                showEmptyState();
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = initApp;
+    </script>
+</body>
+</html>
