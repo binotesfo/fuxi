@@ -11,6 +11,7 @@ class AdaptiveAlgorithm {
         this.minFrequency = 1;
         this.masterThreshold = 3;
         this.states = this.loadStates();
+        this.globalStreak = 0; // 全局连对计数器
     }
 
     /**
@@ -94,6 +95,13 @@ class AdaptiveAlgorithm {
         const state = this.states[questionId];
         if (!state) return;
 
+        // 更新全局连对计数器
+        if (isCorrect) {
+            this.globalStreak++;
+        } else {
+            this.globalStreak = 0;
+        }
+
         if (isCorrect) {
             this.updateCorrect(questionId);
         } else {
@@ -148,6 +156,14 @@ class AdaptiveAlgorithm {
     }
 
     /**
+     * 获取全局连对次数
+     * @returns {number} 全局连对次数
+     */
+    getGlobalStreak() {
+        return this.globalStreak;
+    }
+
+    /**
      * 检查是否已掌握
      * @param {number} questionId - 题目ID
      * @returns {boolean} 是否已掌握
@@ -185,6 +201,16 @@ class AdaptiveAlgorithm {
     }
 
     /**
+     * 检查是否所有题目都已掌握
+     * @param {number} totalQuestions - 总题目数
+     * @returns {boolean} 是否全部已掌握
+     */
+    isAllMastered(totalQuestions) {
+        const progress = this.getProgress(totalQuestions);
+        return progress.learning === 0 && progress.mastered === totalQuestions;
+    }
+
+    /**
      * 获取统计信息
      * @returns {Object} 统计信息
      */
@@ -217,6 +243,7 @@ class AdaptiveAlgorithm {
      */
     reset() {
         this.states = {};
+        this.globalStreak = 0;
         this.storage.remove(this.storageKey);
     }
 }

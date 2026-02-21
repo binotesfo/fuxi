@@ -341,6 +341,82 @@ body {
     background: rgba(255, 255, 255, 0.5);
 }
 
+/* 结算弹窗样式 */
+.settlement-content {
+    padding: 20px 0;
+}
+
+.settlement-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.settlement-row:last-child {
+    border-bottom: none;
+}
+
+.settlement-label {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.settlement-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.settlement-points {
+    font-size: 1.3rem;
+    animation: pointsGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes pointsGlow {
+    0% {
+        text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+    100% {
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+}
+
+/* 通关状态样式 */
+.victory-state {
+    text-align: center;
+    color: white;
+    padding: 60px 20px;
+    animation: victoryFadeIn 1s ease-out;
+}
+
+.victory-state h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    animation: victoryTextBounce 2s ease-in-out infinite;
+}
+
+@keyframes victoryFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes victoryTextBounce {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
 /* 响应式设计 */
 @media (max-width: 380px) {
     .card {

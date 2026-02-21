@@ -122,6 +122,28 @@
         </div>
     </div>
     
+    <!-- 结算弹窗 -->
+    <div class="modal-overlay" id="settlementModal">
+        <div class="modal-content">
+            <div class="modal-title">🎊 阶段结算</div>
+            <div class="settlement-content">
+                <div class="settlement-row">
+                    <span class="settlement-label">正确率：</span>
+                    <span class="settlement-value" id="settlementAccuracy">0%</span>
+                </div>
+                <div class="settlement-row">
+                    <span class="settlement-label">获得奖励：</span>
+                    <span class="settlement-value" id="settlementReward">无奖励</span>
+                </div>
+                <div class="settlement-row">
+                    <span class="settlement-label">积分奖励：</span>
+                    <span class="settlement-value settlement-points" id="settlementPoints">+0</span>
+                </div>
+            </div>
+            <button class="btn btn-confirm" id="settlementConfirm">继续学习</button>
+        </div>
+    </div>
+    
     <!-- JS模块文件 -->
     <script src="../data/人教_部编_初一_语文_上册_题目.js"></script>
     <script src="../js/storage-manager.js"></script>
@@ -274,8 +296,7 @@
          * 选择选项
          */
         function selectOption(index, element) {
-            if (selectedOption !== null) return;
-            
+            // 允许改选选项
             selectedOption = index;
             elements.submitBtn.disabled = false;
             
@@ -332,7 +353,9 @@
             }
             
             // 更新积分
-            const score = scoreSystem.calculateScore(isCorrect, adaptiveAlgorithm.getConsecutiveCorrect(currentQuestion.id));
+            const consecutiveCorrect = adaptiveAlgorithm.getGlobalStreak();
+            const isMastered = adaptiveAlgorithm.isMastered(currentQuestion.id);
+            const score = scoreSystem.calculateScore(consecutiveCorrect, isMastered);
             scoreSystem.addScore(score);
             
             // 更新排行榜
@@ -344,7 +367,6 @@
             
             // 显示特效
             if (isCorrect) {
-                const consecutiveCorrect = adaptiveAlgorithm.getConsecutiveCorrect(currentQuestion.id);
                 effectSystem.showEffect(consecutiveCorrect, score);
                 updateStreakIndicator(consecutiveCorrect);
             } else {
@@ -354,6 +376,38 @@
             
             // 更新UI
             updateStats();
+            
+            // 检查正确率里程碑突破
+            if (isCorrect) {
+                const stats = statsManager.getStats();
+                const breakthroughs = statsManager.checkMilestones(stats.accuracyRate);
+                if (breakthroughs.length > 0) {
+                    // 触发突破特效（只触发最高级别的）
+                    const highestBreakthrough = Math.max(...breakthroughs);
+                    if (highestBreakthrough >= 99) {
+                        effectSystem.breakthrough99();
+                    } else if (highestBreakthrough >= 98) {
+                        effectSystem.breakthrough98();
+                    } else if (highestBreakthrough >= 97) {
+                        effectSystem.breakthrough97();
+                    } else if (highestBreakthrough >= 96) {
+                        effectSystem.breakthrough96();
+                    } else if (highestBreakthrough >= 95) {
+                        effectSystem.breakthrough95();
+                    } else if (highestBreakthrough >= 90) {
+                        effectSystem.breakthrough90();
+                    } else if (highestBreakthrough >= 80) {
+                        effectSystem.breakthrough80();
+                    }
+                }
+            }
+            
+            // 检查是否需要结算（每20题）
+            if (statsManager.shouldSettle()) {
+                const stats = statsManager.getStats();
+                const reward = scoreSystem.calculateSettlementReward(stats.accuracyRate);
+                statsManager.showSettlementReward(reward, effectSystem, scoreSystem);
+            }
             
             // 切换按钮
             elements.submitBtn.style.display = 'none';
@@ -368,7 +422,24 @@
             if (nextQ) {
                 displayQuestion(nextQ);
             } else {
-                showEmptyState();
+                // 检查是否全部已掌握
+                if (adaptiveAlgorithm.isAllMastered(knowledgePoints.length)) {
+                    // 触发通关特效
+                    effectSystem.ultimateVictory();
+                    // 添加通关奖励积分
+                    const victoryReward = scoreSystem.calculateVictoryReward();
+                    scoreSystem.addScore(victoryReward);
+                    // 更新排行榜
+                    const username = userManager.getUsername();
+                    const totalScore = scoreSystem.getScore();
+                    if (username) {
+                        leaderboard.updateUserScore(username, totalScore);
+                    }
+                    // 显示通关状态
+                    showVictoryState();
+                } else {
+                    showEmptyState();
+                }
             }
         }
         
@@ -436,6 +507,39 @@
             elements.gameArea.style.display = 'none';
             elements.emptyState.style.display = 'block';
             elements.wrongBookEmpty.style.display = 'none';
+        }
+        
+        /**
+         * 显示通关状态
+         */
+        function showVictoryState() {
+            elements.gameArea.style.display = 'none';
+            elements.emptyState.style.display = 'none';
+            elements.wrongBookEmpty.style.display = 'none';
+            
+            // 显示通关界面
+            const victoryDiv = document.createElement('div');
+            victoryDiv.className = 'victory-state';
+            victoryDiv.innerHTML = `
+                <h2>🎉 恭喜通关！🎉</h2>
+                <p>你已经掌握了所有核心知识点！</p>
+                <p>总积分：${scoreSystem.getScore()} 分</p>
+                <button class="reset-btn" onclick="resetProgress()">重新开始</button>
+            `;
+            
+            // 隐藏所有空状态
+            elements.emptyState.style.display = 'none';
+            elements.wrongBookEmpty.style.display = 'none';
+            
+            // 显示通关状态
+            elements.gameArea.style.display = 'none';
+            elements.gameArea.parentElement.insertBefore(victoryDiv, elements.gameArea);
+            
+            // 移除旧的通关状态（如果有）
+            const oldVictory = document.querySelector('.victory-state');
+            if (oldVictory && oldVictory !== victoryDiv) {
+                oldVictory.remove();
+            }
         }
         
         /**

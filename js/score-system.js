@@ -34,22 +34,50 @@ class ScoreSystem {
     calculateScore(consecutiveCorrect, isMastered) {
         let points = 0;
 
-        if (consecutiveCorrect === 1) {
-            points = 1;  // Level 1
-        } else if (consecutiveCorrect === 3 || consecutiveCorrect === 4) {
-            points = 3;  // Level 2
+        // 连对细化规则
+        if (consecutiveCorrect >= 1 && consecutiveCorrect <= 2) {
+            points = 1;   // 1-2次连对
+        } else if (consecutiveCorrect >= 3 && consecutiveCorrect <= 4) {
+            points = 3;   // 3-4次连对
         } else if (consecutiveCorrect >= 5 && consecutiveCorrect <= 9) {
-            points = 5;  // Level 3
-        } else if (consecutiveCorrect >= 10) {
-            points = 10; // Level 4
+            points = 5;   // 5-9次连对
+        } else if (consecutiveCorrect >= 10 && consecutiveCorrect <= 19) {
+            points = 10;  // 10-19次连对
+        } else if (consecutiveCorrect >= 20) {
+            points = 20;  // 20+次连对
         }
 
         // 已掌握额外奖励
         if (isMastered) {
-            points += 50; // Level 5
+            points += 50;
         }
 
         return points;
+    }
+
+    /**
+     * 计算结算奖励
+     * @param {number} accuracyRate - 正确率（0-100）
+     * @returns {Object} { level, points, text }
+     */
+    calculateSettlementReward(accuracyRate) {
+        if (accuracyRate >= 95) {
+            return { level: 'gold', points: 200, text: '黄金奖励' };
+        } else if (accuracyRate >= 85) {
+            return { level: 'silver', points: 100, text: '白银奖励' };
+        } else if (accuracyRate >= 70) {
+            return { level: 'bronze', points: 50, text: '青铜奖励' };
+        } else {
+            return { level: 'none', points: 0, text: '无奖励' };
+        }
+    }
+
+    /**
+     * 计算通关奖励
+     * @returns {number} 通关奖励积分
+     */
+    calculateVictoryReward() {
+        return 500; // 终极通关奖励
     }
 
     /**
